@@ -26,7 +26,7 @@ class UserController extends Controller
             "email" => $validatedData["email"],
             "cpf" => $validatedData["cpf"],
             "password" => $password,
-            "active" => true
+            "active" => true,
         ]);
 
         if (!$user) {
@@ -69,13 +69,22 @@ class UserController extends Controller
         $user->active = !$user->active;
 
         if (!$user->save()) {
-            return back()->with('error', 'Não foi possível atualizar o status.');
+            return back()->with(
+                "error",
+                "Não foi possível atualizar o status.",
+            );
         }
 
-        return back()->with('success', $user->active ? 'Usuário ativado com sucesso!' : 'Usuário desativado com sucesso!');
+        return back()->with(
+            "success",
+            $user->active
+                ? "Usuário ativado com sucesso!"
+                : "Usuário desativado com sucesso!",
+        );
     }
-    public function authenticate(Request $request): \Illuminate\Http\RedirectResponse
-    {
+    public function authenticate(
+        Request $request,
+    ): \Illuminate\Http\RedirectResponse {
         $credentials = $request->only("email", "password");
 
         if (Auth::attempt($credentials)) {
@@ -84,6 +93,8 @@ class UserController extends Controller
             return redirect("/", 201);
         }
 
-        return back()->withErrors(["email" => "O email inserido não está cadastrado"])->onlyInput('email');
+        return back()
+            ->withErrors(["email" => "O email inserido não está cadastrado"])
+            ->onlyInput("email");
     }
 }

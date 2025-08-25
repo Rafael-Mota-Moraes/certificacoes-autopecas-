@@ -8,5 +8,10 @@
         <label for="password">Senha:</label>
         <input type="password" id="password" name="password" required>
     </div>
+    <div>
+        <label for="forgot-password">
+            <a href="{{ route('password.request') }}">Esqueceu sua senha?</a>
+        </label>
+    </div>
     <button type="submit">Entrar</button>
 </form>
