@@ -1,19 +1,5 @@
-<footer class="main-footer">
-    <div class="container">
-        <p>&copy; {{ date('Y') }} Minha Aplicação. Todos os direitos reservados.</p>
+<footer class="bg-[#840032] text-white">
+    <div class="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-sm">&copy; {{ date('Y') }} Todos os direitos reservados.</p>
     </div>
 </footer>
-
-@once
-    @push('styles')
-    <style>
-        .main-footer {
-            background-color: #343a40;
-            color: white;
-            padding: 1.5rem 0;
-            text-align: center;
-            margin-top: auto; 
-        }
-    </style>
-    @endpush
-@endonce

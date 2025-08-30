@@ -7,7 +7,11 @@ use App\Http\Controllers\UserController;
 
 Route::get("/user/register", function () {
     return view("user.register");
-});
+})->name("register");
+
+Route::get("/user/login", function () {
+    return view("user.login");
+})->name("login");
 
 Route::post("/user", [UserController::class, "create"])->name("user.register");
 
