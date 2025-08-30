@@ -1,11 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResellerController;
+use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
-    return view("welcome");
-});
+    return view("login");
+})->name("login");
+
+include_once __DIR__ . "/user.php";
 
 // This single line creates all the necessary routes for the Reseller CRUD:
 // GET /resellers - index
