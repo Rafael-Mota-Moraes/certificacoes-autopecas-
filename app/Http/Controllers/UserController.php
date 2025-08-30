@@ -7,33 +7,71 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function create(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $validatedData = $request->validate([
-            "name" => "required",
-            "email" => "required|unique:users,email|email",
-            "cpf" => "required|unique:users,cpf|min:11|max:11",
-            "password" => "required|min:6",
+        $validatedData = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'cpf' => [
+                'required',
+                'string',
+                'unique:users,cpf',
+                function ($attribute, $value, $fail) {
+                    if (!$this->isValidCPF($value)) {
+                        $fail('O campo :attribute não é um CPF válido.');
+                    }
+                },
+            ],
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $password = Hash::make($validatedData["password"]);
+        if ($validatedData->fails()) {
+            return redirect()->route('register')
+                ->withErrors($validatedData)
+                ->withInput(); // withInput() mantém os dados antigos no formulário
+        }
 
         $user = User::create([
-            "name" => $validatedData["name"],
-            "email" => $validatedData["email"],
-            "cpf" => $validatedData["cpf"],
-            "password" => $password,
-            "active" => true,
+            'name' => $request->name,
+            'email' => $request->email,
+            'cpf' => preg_replace('/[^0-9]/', '', $request->cpf),
+            'password' => Hash::make($request->password),
         ]);
 
         if (!$user) {
             return back()->with("error", "Erro ao criar usuário");
         }
 
-        return redirect("/", 201);
+        return redirect()->route('login')->with('success', 'Cadastro realizado com sucesso! Faça seu login.');
+    }
+
+    private function isValidCPF(string $cpf): bool
+    {
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+
+        if (strlen($cpf) != 11) {
+            return false;
+        }
+
+        if (preg_match('/(\d)\1{10}/', $cpf)) {
+            return false;
+        }
+
+        for ($t = 9; $t < 11; $t++) {
+            for ($d = 0, $c = 0; $c < $t; $c++) {
+                $d += $cpf[$c] * (($t + 1) - $c);
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cpf[$c] != $d) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function update(Request $request): \Illuminate\Http\RedirectResponse
@@ -78,8 +116,8 @@ class UserController extends Controller
         return back()->with(
             "success",
             $user->active
-                ? "Usuário ativado com sucesso!"
-                : "Usuário desativado com sucesso!",
+            ? "Usuário ativado com sucesso!"
+            : "Usuário desativado com sucesso!",
         );
     }
     public function authenticate(

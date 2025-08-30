@@ -4,8 +4,9 @@ use App\Http\Controllers\ResellerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
-    return view("login");
-})->name("login");
+    return view("home");
+})->name("home");
+
 
 include_once __DIR__ . "/user.php";
 
