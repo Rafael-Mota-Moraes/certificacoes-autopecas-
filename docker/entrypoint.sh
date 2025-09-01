@@ -22,16 +22,6 @@ mkdir -p storage/framework/cache/data
 echo "Ajustando permissões de diretório..."
 chmod -R 777 storage bootstrap/cache
 
-echo "Limpando o cache de pacotes antigos do Laravel..."
-rm -f bootstrap/cache/packages.php
-rm -f bootstrap/cache/services.php
-
-echo "Limpando e recriando os caches da aplicação..."
-php artisan config:clear
-php artisan cache:clear
-php artisan route:clear
-php artisan view:clear
-
 echo "Verificando a APP_KEY..."
 if [ -z "$(grep -E '^APP_KEY=' .env | cut -d '=' -f2-)" ]; then
     echo "APP_KEY não encontrada. Gerando nova chave..."
