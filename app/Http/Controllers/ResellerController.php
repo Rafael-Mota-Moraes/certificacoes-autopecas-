@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 
 class ResellerController extends Controller
 {
+    public function new_certificate(){
+        return view('resellers.new_certificate');
+    }
     /**
      * Display a listing of the resource.
      */
