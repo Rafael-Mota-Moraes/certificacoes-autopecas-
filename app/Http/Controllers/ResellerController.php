@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 class ResellerController extends Controller
 {
     public function new_certificate(){
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+        if ($this->review->len() >= 100)
         return view('resellers.new_certificate');
     }
     /**

@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 
 class Reseller extends Model
 {
@@ -33,5 +34,9 @@ class Reseller extends Model
     public function contact(): HasOne
     {
         return $this->hasOne(Contact::class);
+    }
+    
+    public function review():HasOneOrMany{
+        return $this->hasMany(Review::class);
     }
 }
