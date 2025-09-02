@@ -9,15 +9,14 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $allResellers = Reseller::get();
-
-        $topRatedResellers = $allResellers->take(4);
-
-        $otherResellers = $allResellers->skip(4);
+        $resellersForMap = Reseller::with('address')->whereHas('address', function ($query) {
+            $query->whereNotNull('latitude')->whereNotNull('longitude');
+        })->get();
 
         return view('home', [
-            'topRatedResellers' => $topRatedResellers,
-            'otherResellers' => $otherResellers,
+            'topRatedResellers' => Reseller::inRandomOrder()->take(5)->get(),
+            'otherResellers' => Reseller::inRandomOrder()->take(8)->get(),
+            'resellersForMap' => $resellersForMap,
         ]);
     }
 }

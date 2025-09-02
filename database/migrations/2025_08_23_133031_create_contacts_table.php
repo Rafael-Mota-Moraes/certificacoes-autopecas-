@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contact', function (Blueprint $table) {
-                    $table->id();
-                    // Foreign key to link with the resellers table
-                    $table->string('reseller_id');
-                    $table->string('phone')->nullable();
-                    $table->string('email')->nullable();
-                    $table->timestamps();
-                });
+        Schema::create('contacts', function (Blueprint $table) {
+            $table->id();
+            // Foreign key to link with the resellers table
+            $table->foreignId('reseller_id')->constrained()->onDelete('cascade');
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

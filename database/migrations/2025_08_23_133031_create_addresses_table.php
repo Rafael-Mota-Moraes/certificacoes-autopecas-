@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('address', function (Blueprint $table) {
-                    $table->id();
-                    // Foreign key to link with the resellers table
-                    $table->string('reseller_id');
-                    $table->string('street');
-                    $table->string('city');
-                    $table->string('state');
-                    $table->string('zip_code');
-                    $table->timestamps();
-                });
+        Schema::create('addresses', function (Blueprint $table) {
+            $table->id();
+            // Foreign key to link with the resellers table
+            $table->foreignId('reseller_id')->constrained()->onDelete('cascade');
+            $table->string('street');
+            $table->string('city');
+            $table->string('state');
+            $table->string('zip_code');
+            $table->timestamps();
+        });
     }
 
     /**
