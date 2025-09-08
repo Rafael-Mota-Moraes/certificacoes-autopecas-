@@ -21,6 +21,8 @@ class Certificate extends Model
         'city',
         'signature',
         'text',
+        'is_active',
+        'is_approved'
     ];
 
     /**
@@ -45,5 +47,13 @@ class Certificate extends Model
     }public function text(): String
     {
         return $this->text;
+    }
+    public function is_active(): String
+    {
+        return $this->is_active;
+    }
+    public function is_approved(): String
+    {
+        return $this->is_approved;
     }
 }

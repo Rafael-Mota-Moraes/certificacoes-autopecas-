@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ResellerController;
+use App\Http\Controllers\CertificateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
@@ -19,3 +20,4 @@ include_once __DIR__ . "/user.php";
 // PUT/PATCH /resellers/{reseller} - update
 // DELETE /resellers/{reseller} - destroy
 Route::resource("resellers", ResellerController::class);
+Route::resource("certificate", CertificateController::class);

@@ -27,7 +27,10 @@ class Reseller extends Model
     {
         return $this->hasOne(Address::class);
     }
-
+    public function certificate(): HasOne
+    {
+        return $this->hasOne(Certificate::class);
+    }
     /**
      * Get the contact associated with the reseller.
      */

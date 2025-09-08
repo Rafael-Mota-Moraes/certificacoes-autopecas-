@@ -28,6 +28,17 @@ class CertificateController extends Controller
         */
     public function create(Request $request): JsonResponse
     {
+        $reviews = $request->reseller->reviews();
+        if ($reviews->length < 100) {
+            return response()->json(['error' => 'Too low reviews'], 422);
+        }
+        
+        $good_review = $reviews->where('rating', '>=', 3)->count();
+        $perc_acceptable = $good_review / $reviews->length * 100;
+        if ($perc_acceptable < 80) {
+            return response()->json(['error' => 'Too low rating'], 422);
+        }
+        
         // Validate the incoming request data based on the Certificate model
         $validatedData = $request->validate([
             'status' => ['required', 'string', 'max:255'],
@@ -35,6 +46,8 @@ class CertificateController extends Controller
             'city' => ['required', 'string', 'max:255'],
             'signature' => ['required', 'string'],
             'text' => ['required', 'string'],
+            'is_active' => ['required', 'boolean', 'default:false'],
+            'is_approved' => ['required', 'boolean', 'default:false']
         ]);
 
         $certificate = Certificate::create($validatedData);
