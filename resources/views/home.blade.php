@@ -61,7 +61,7 @@
             </button>
         </div>
 
-        <div id="error" class="text-red-500 mb-6  "></div>
+        <div id="error" class="text-red-500 mb-6"></div>
 
         <div id="map" class="h-96 w-full max-w-4xl mx-auto rounded-lg shadow-lg z-10"></div>
 
