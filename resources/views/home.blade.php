@@ -1,7 +1,6 @@
 <x-layout>
 
     <style>
-
         .swiper-button-prev,
         .swiper-button-next {
             color: #FFFFFF !important;
@@ -37,7 +36,8 @@
             opacity: 1;
         }
 
-        #topRatedResellers {
+        h2,
+        h1 {
             font-family: "Anton SC", sans-serif;
             font-size: 36px;
         }
@@ -51,12 +51,12 @@
 
         <div class="max-w-md mx-auto mb-6 flex items-center border border-gray-300 rounded-full shadow-sm">
             <input type="text" id="search-input" placeholder="Digite seu CEP ou cidade"
-                   class="w-full px-4 py-2 bg-transparent rounded-full focus:outline-none">
+                class="w-full px-4 py-2 bg-transparent rounded-full focus:outline-none">
             <button id="search-button" class="px-4 text-gray-500 hover:text-[#840032]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
-                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                          clip-rule="evenodd"/>
+                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                        clip-rule="evenodd" />
                 </svg>
             </button>
         </div>
@@ -78,7 +78,7 @@
                     <div class="swiper-wrapper">
                         @foreach ($topRatedResellers as $reseller)
                             <div class="swiper-slide">
-                                <x-reseller-card :reseller="$reseller"/>
+                                <x-reseller-card :reseller="$reseller" />
                             </div>
                         @endforeach
                     </div>
@@ -99,7 +99,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 @foreach ($otherResellers as $reseller)
-                    <x-reseller-card :reseller="$reseller"/>
+                    <x-reseller-card :reseller="$reseller" />
                 @endforeach
             </div>
         </div>
