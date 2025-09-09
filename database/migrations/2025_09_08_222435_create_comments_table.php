@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('addresses', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            // Foreign key to link with the resellers table
-            $table->foreignId('reseller_id')->constrained()->onDelete('cascade');
-            $table->string('street');
-            $table->string('city');
-            $table->string('state');
-            $table->string('zip_code');
+            $table->string("comment");
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('address');
+        Schema::dropIfExists('comments');
     }
 };
