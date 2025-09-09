@@ -1,4 +1,47 @@
 <x-layout>
+
+    <style>
+
+        .swiper-button-prev,
+        .swiper-button-next {
+            color: #FFFFFF !important;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .swiper-button-prev {
+            left: 10px;
+        }
+
+        .swiper-button-next {
+            right: 10px;
+        }
+
+
+        .top-rated-swiper-pagination {
+            position: relative;
+            bottom: auto;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .top-rated-swiper-pagination .swiper-pagination-bullet {
+            background-color: #840032 !important;
+            opacity: 0.5;
+            width: 10px;
+            height: 10px;
+        }
+
+        .top-rated-swiper-pagination .swiper-pagination-bullet-active {
+            background-color: #840032 !important;
+            opacity: 1;
+        }
+
+        #topRatedResellers {
+            font-family: "Anton SC", sans-serif;
+            font-size: 36px;
+        }
+    </style>
     <x-slot:title>
         Página Inicial
     </x-slot:title>
@@ -8,12 +51,12 @@
 
         <div class="max-w-md mx-auto mb-6 flex items-center border border-gray-300 rounded-full shadow-sm">
             <input type="text" id="search-input" placeholder="Digite seu CEP ou cidade"
-                class="w-full px-4 py-2 bg-transparent rounded-full focus:outline-none">
+                   class="w-full px-4 py-2 bg-transparent rounded-full focus:outline-none">
             <button id="search-button" class="px-4 text-gray-500 hover:text-[#840032]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
-                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                        clip-rule="evenodd" />
+                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                          clip-rule="evenodd"/>
                 </svg>
             </button>
         </div>
@@ -24,30 +67,47 @@
 
     </div>
 
-    <h2 class="text-3xl font-extrabold text-black text-center uppercase mb-8">Revendedoras mais avaliadas</h2>
-    <section class="bg-[#840032] py-12">
-        <div class="container mx-auto px-4">
+    <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">Revendedoras mais
+        avaliadas</h2>
 
-            <div class="flex space-x-8 overflow-x-auto pb-4 -mx-4 px-10 align-content-center m-auto">
-                @foreach ($topRatedResellers as $reseller)
-                    <x-reseller-card :reseller="$reseller" />
-                @endforeach
+    <div class="relative">
+        <section class="bg-[#840032] py-12">
+            <div class="container mx-auto px-4">
+
+                <div class="swiper top-rated-swiper">
+                    <div class="swiper-wrapper">
+                        @foreach ($topRatedResellers as $reseller)
+                            <div class="swiper-slide">
+                                <x-reseller-card :reseller="$reseller"/>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="bg-gray-100 py-16">
+        <div class="swiper-pagination top-rated-swiper-pagination"></div>
+    </div>
+
+
+    <section class="py-16">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 @foreach ($otherResellers as $reseller)
-                    <x-reseller-card :reseller="$reseller" />
+                    <x-reseller-card :reseller="$reseller"/>
                 @endforeach
             </div>
         </div>
     </section>
+
     @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
         <script>
             const map = L.map('map').setView([-14.235, -51.925], 4);
 
@@ -118,6 +178,35 @@
                 if (event.key === 'Enter') {
                     searchLocation();
                 }
+            });
+
+            const swiper = new Swiper('.top-rated-swiper', {
+                autoplay: true,
+                loop: true,
+                spaceBetween: 30,
+                slidesPerView: 1,
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 4,
+                        spaceBetween: 40,
+                    },
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.top-rated-swiper-pagination',
+                    clickable: true,
+                },
             });
         </script>
     @endpush
