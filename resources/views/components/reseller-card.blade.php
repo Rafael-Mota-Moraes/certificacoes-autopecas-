@@ -18,7 +18,7 @@
 
         <p class="mb-4">
             @if ($reseller->address)
-                {{ $reseller->address->street }} - {{ $reseller->address->city }} -{{ $reseller->address->state }}
+                {{ $reseller->address->street }} - {{ $reseller->address->city }} - {{ $reseller->address->state }}
             @else
                 Endereço não cadastrado.
             @endif
