@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+<<<<<<< Updated upstream
+=======
+use Illuminate\Http\RedirectResponse;
+>>>>>>> Stashed changes
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -74,7 +78,7 @@ class UserController extends Controller
         return true;
     }
 
-    public function update(Request $request): \Illuminate\Http\RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         $user = Auth::user();
 
@@ -100,7 +104,24 @@ class UserController extends Controller
         return back()->with("success", "Perfil atualizado com sucesso!");
     }
 
-    public function toggle(Request $request): \Illuminate\Http\RedirectResponse
+    public function updateProfilePhoto(Request $request): RedirectResponse
+    {
+
+        $request->validate(
+            ['photo' => ['required', 'image']],
+        );
+        $user = Auth::user();
+
+        $path = $request->file('photo')->store('profile-photos', 'public');
+
+        $user->update([
+            'profile_photo_path' => $path,
+        ]);
+
+        return back()->with("success", "Foto atualizada com sucesso!");
+    }
+
+    public function toggle(): RedirectResponse
     {
         $user = Auth::user();
 
@@ -120,9 +141,11 @@ class UserController extends Controller
             : "Usuário desativado com sucesso!",
         );
     }
+
     public function authenticate(
         Request $request,
-    ): \Illuminate\Http\RedirectResponse {
+    ): RedirectResponse
+    {
         $credentials = $request->only("email", "password");
 
         if (Auth::attempt($credentials)) {
