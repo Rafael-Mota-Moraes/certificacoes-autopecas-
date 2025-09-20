@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
             // Foreign key to link with the resellers table
-            $table->string('reseller_id');
+            $table->foreignId('reseller_id')->constrained()->onDelete('cascade');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->timestamps();

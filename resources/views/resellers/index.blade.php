@@ -1,61 +1,87 @@
-@extends('layouts.app')
+<x-layout>
+    <x-slot:title>
+        Minhas Revendedoras
+    </x-slot:title>
 
-@section('content')
-<div class="max-w-7xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-700">Resellers</h1>
-        <a href="{{ route('resellers.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-            Add New Reseller
-        </a>
-    </div>
+    <div class="font-sans p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-145px)]">
+        <div class="container mx-auto">
+            <h1 class="text-2xl lg:text-3xl font-bold text-center mb-6">
+                MINHAS REVENDEDORAS
+            </h1>
 
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
-            <p>{{ session('success') }}</p>
-        </div>
-    @endif
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                @if($resellers->isEmpty())
+                    <div class="text-center">
+                        <p>Nenhuma revendedora encontrada.</p>
+                    </div>
+                @else
+                    @foreach ($resellers as $resseler)
+                        <div class="flex flex-col lg:flex-row gap-8 justify-between">
 
-    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full leading-normal">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CNPJ</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($resellers as $reseller)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->name }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->contact->email }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->cnpj }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->contact->phone ?? 'N/A' }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm text-center">
-                                <div class="flex item-center justify-center space-x-2">
-                                    <a href="{{ route('resellers.edit', $reseller) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">Edit</a>
-                                    <form action="{{ route('resellers.destroy', $reseller) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 font-medium">Delete</button>
-                                    </form>
+                            <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-1 gap-x-8 gap-y-4">
+                                    <div class="border-b-1 border-gray-300">
+                                        <h3 class="font-semibold text-gray-600">Nome da revendedora:</h3>
+                                        <p class="text-gray-600">{{$reseller->name}}</p>
+                                    </div>
+                                    <div class="border-b-1 border-gray-300">
+                                        <h3 class="font-semibold text-gray-600">CNPJ:</h3>
+                                        <p class="text-gray-600">{{$reseller->cnpj}}</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-600">Endereço:</h3>
+                                        <p class="text-gray-600"></p>
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-10 text-gray-500">No resellers found.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-            {{ $resellers->links() }}
+                            </div>
+
+                            <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-1 gap-x-8 gap-y-4">
+                                    <div class="border-b-1 border-gray-300">
+                                        <h3 class="font-semibold text-gray-600">Contato:</h3>
+                                        <p class="text-gray-600">Telefone: </p>
+                                    </div>
+                                    <div class="border-b-1 border-gray-300">
+                                        <h3 class="font-semibold text-gray-600">E-mail:</h3>
+                                        <p class="text-gray-600"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="w-full lg:w-1/3 flex flex-col items-center justify-center space-y-2">
+                                <div class="w-40 h-40 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
+                                </div>
+                                <button class="text-sm text-[#840032] font-semibold hover:underline">
+                                    Trocar foto
+                                </button>
+                            </div>
+
+                        </div>
+
+                    @endforeach
+
+                    <div class="flex items-center gap-4 pt-4 mt-4">
+                        <button
+                            class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
+                            Atualizar dados
+                        </button>
+                        <button
+                            class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
+                            Desativar
+                        </button>
+                    </div>
+                @endif
+
+            </div>
         </div>
     </div>
-</div>
-@endsection
+
+    <div class="fixed bottom-24 right-6 lg:hidden">
+        <button class="w-14 h-14 bg-[#840032] rounded-full flex items-center justify-center text-white shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+        </button>
+    </div>
+</x-layout>

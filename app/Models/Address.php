@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Address extends Model
 {
     use HasFactory;
+    protected $table = 'address';
 
     protected $fillable = [
-        'reseller_id',
         'street',
         'number',
         'city',

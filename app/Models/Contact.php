@@ -14,10 +14,9 @@ class Contact extends Model
      *
      * @var string
      */
-    protected $table = 'contact';
+    protected $table = 'contacts';
 
     protected $fillable = [
-        'reseller_id',
         'phone',
         'email',
     ];

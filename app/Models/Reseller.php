@@ -15,6 +15,7 @@ class Reseller extends Model
      *
      * @var array<int, string>
      */
+    protected $table = "resellers";
     protected $fillable = [
         'name',
         'cnpj',

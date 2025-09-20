@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('address', function (Blueprint $table) {
             $table->id();
             // Foreign key to link with the resellers table
-            $table->string('reseller_id');
+            $table->foreignId('reseller_id')->constrained('resellers')->onDelete('cascade');
             $table->string('street');
             $table->string('number');
             $table->string('city');
