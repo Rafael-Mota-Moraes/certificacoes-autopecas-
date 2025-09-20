@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Reseller extends Model
@@ -17,6 +18,7 @@ class Reseller extends Model
     protected $fillable = [
         'name',
         'cnpj',
+        'photo_path',
     ];
 
     /**
@@ -28,10 +30,10 @@ class Reseller extends Model
     }
 
     /**
-     * Get the contact associated with the reseller.
+     * Get the contacts associated with the reseller.
      */
-    public function contact(): HasOne
+    public function contacts(): HasMany
     {
-        return $this->hasOne(Contact::class);
+        return $this->hasMany(Contact::class);
     }
 }

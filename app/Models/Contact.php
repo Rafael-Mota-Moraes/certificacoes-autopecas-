@@ -9,6 +9,13 @@ class Contact extends Model
 {
     use HasFactory;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'contact';
+
     protected $fillable = [
         'reseller_id',
         'phone',
