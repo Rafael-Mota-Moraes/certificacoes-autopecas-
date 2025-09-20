@@ -89,7 +89,7 @@
                                                 </svg>
                                             </label>
                                         </div>
-                                        <input type="file" id="photo-upload" name="photo_path" class="hidden">
+                                        <input type="file" id="photo-upload" name="photo" class="hidden">
                                         @error('photo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>

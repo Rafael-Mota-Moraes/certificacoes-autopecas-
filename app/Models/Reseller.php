@@ -18,7 +18,7 @@ class Reseller extends Model
     protected $fillable = [
         'name',
         'cnpj',
-        'photo_path',
+        'photo',
     ];
 
     /**

@@ -14,8 +14,8 @@ class ResellerController extends Controller
      */
     public function index()
     {
-        // FIX: Changed 'contact' to 'contacts' to match the HasMany relationship
-        $resellers = Reseller::with(['address', 'contact'])->latest()->paginate(10);
+        // FIX: Changed 'contacts' to 'contacts' to match the HasMany relationship
+        $resellers = Reseller::with(['address', 'contacts'])->latest()->paginate(10);
         return view('resellers.index', compact('resellers'));
     }
 
@@ -35,21 +35,17 @@ class ResellerController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'cnpj' => 'required|string|unique:resellers,cnpj',
-            // FIX: Changed 'photo_path' to 'photo' to match the form input name
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
-            // FIX: Changed from 'address.*.street' to flat keys to match the form
             'street' => 'required|string|max:255',
             'number' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'zip_code' => 'required|string|max:20',
 
-            // FIX: Changed 'contact' to 'contacts' to match the form and relationship
-            'contact' => 'required|array|min:1',
-            'contact.*.phone' => 'required|string|max:20',
-            // FIX: Corrected table name from 'contact' to 'contact' for the unique rule
-            'contact.*.email' => 'required|email|unique:contact,email',
+            'contacts' => 'required|array|min:1',
+            'contacts.*.phone' => 'required|string|max:20',
+            'contacts.*.email' => 'required|email|unique:contacts,email',
         ]);
 
         // Use a database transaction to ensure data integrity
@@ -63,7 +59,7 @@ class ResellerController extends Controller
             $reseller = Reseller::create([
                 'name' => $validated['name'],
                 'cnpj' => $validated['cnpj'],
-                'photo_path' => $photoPath,
+                'photo' => $photoPath,
             ]);
 
             // Create the associated address using the corrected flat keys
@@ -84,7 +80,6 @@ class ResellerController extends Controller
             }
         });
 
-        echo 'saved with success';
         return redirect()->route('resellers.index')->with('success', 'Reseller created successfully!');
     }
 
@@ -94,8 +89,8 @@ class ResellerController extends Controller
      */
     public function show(Reseller $reseller)
     {
-        // FIX: Changed 'contact' to 'contacts'
-        $reseller->load(['address', 'contact']);
+        // FIX: Changed 'contacts' to 'contacts'
+        $reseller->load(['address', 'contacts']);
         return view('resellers.show', compact('reseller'));
     }
 
@@ -104,8 +99,8 @@ class ResellerController extends Controller
      */
     public function edit(Reseller $reseller)
     {
-        // FIX: Changed 'contact' to 'contact'
-        $reseller->load(['address', 'contact']);
+        // FIX: Changed 'contacts' to 'contacts'
+        $reseller->load(['address', 'contacts']);
         return view('resellers.edit', compact('reseller'));
     }
 
@@ -123,13 +118,13 @@ class ResellerController extends Controller
             'city' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'zip_code' => 'required|string|max:20',
-            'contact' => 'required|array|min:1',
-            'contact.*.phone' => 'required|string|max:20',
-            'contact.*.email' => 'required|email',
+            'contacts' => 'required|array|min:1',
+            'contacts.*.phone' => 'required|string|max:20',
+            'contacts.*.email' => 'required|email',
         ]);
 
         DB::transaction(function () use ($validated, $reseller, $request) {
-            $photoPath = $reseller->photo_path;
+            $photoPath = $reseller->photo;
             if ($request->hasFile('photo')) {
                 // Delete old photo if it exists
                 if ($photoPath) {
@@ -141,7 +136,7 @@ class ResellerController extends Controller
             $reseller->update([
                 'name' => $validated['name'],
                 'cnpj' => $validated['cnpj'],
-                'photo_path' => $photoPath,
+                'photo' => $photoPath,
             ]);
 
             $reseller->address()->updateOrCreate([], [
@@ -170,8 +165,8 @@ class ResellerController extends Controller
     public function destroy(Reseller $reseller)
     {
         DB::transaction(function () use ($reseller) {
-            if ($reseller->photo_path) {
-                Storage::disk('public')->delete($reseller->photo_path);
+            if ($reseller->photo) {
+                Storage::disk('public')->delete($reseller->photo);
             }
             $reseller->address()->delete();
             $reseller->contacts()->delete();

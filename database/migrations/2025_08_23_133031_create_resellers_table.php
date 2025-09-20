@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('cnpj')->unique();
-            $table->string('photo_path')->nullable();
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }
