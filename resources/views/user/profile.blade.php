@@ -1,66 +1,113 @@
 <x-layout>
     <x-slot:title>
-        Perfil de {{auth()->user()->name}}
+        Perfil de {{ auth()->user()->name }}
     </x-slot:title>
 
+    <div x-data="{ modalOpen: false }" @keydown.escape.window="modalOpen = false" class="relative">
 
-    <span class="text-center">
-        <h1>Dados da conta</h1>
-    </span>
-
-    <div class="mt-8 bg-white m-auto min-w-200 max-w-200 min-h-70 flex rounded-2xl border-2 divide-x divide-gray-300">
-        <div class="flex-1 flex-col p-10 text-left min-w-65">
-            <p class="ml-4 mb-6">
-                Nome: {{auth()->user()->name}}
-            </p>
-            <hr>
-            <p class="ml-4 my-6">
-                Email: {{auth()->user()->email}}
-            </p>
-            <hr>
-
-            <p class="ml-4 my-6">
-                CPF: {{auth()->user()->cpf}}m
-            </p>
-
-            <button style="background-color: #840032" class="p-1.5 text-white rounded-sm mb-8 ml-4">Atualizar dados
-            </button>
-        </div>
-        {{-- DENTRO DO SEU ARQUIVO BLADE --}}
-        <div class="flex-1 p-8 flex flex-col items-center justify-center">
-
-            <form id="photo-form" method="POST" action="{{ route('user.updatePhoto') }}" enctype="multipart/form-data">
-                @method("PATCH")
-                @csrf
-
-                <input type="file" name="photo" id="photo" class="hidden">
-
-                <label for="photo" class="cursor-pointer group flex flex-col items-center">
-
-                    <img class="rounded-full h-32 w-32 object-cover border-4 border-gray-200 group-hover:opacity-80 transition-opacity"
-                         src="{{ auth()->user()->profile_photo_url }}"
-                         alt="Foto de Perfil">
-
-                    <span class="mt-4 text-sm hover:underline" style="color: #840032;">
-                Trocar foto de perfil
-            </span>
-
-                </label>
-
-                <button type="submit" class="hidden">Enviar</button>
-            </form>
-
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800">Dados da conta</h1>
         </div>
 
+        <div
+            class="mt-8 bg-white m-auto max-w-2xl min-h-70 flex rounded-2xl border-2 divide-x divide-gray-300 shadow-lg">
+            <div class="flex-1 flex-col p-10 text-left">
+                <p class="text-gray-700 mb-6">
+                    <strong class="font-semibold">Nome:</strong> {{ auth()->user()->name }}
+                </p>
+                <hr>
+                <p class="text-gray-700 my-6">
+                    <strong class="font-semibold">E-mail:</strong> {{ auth()->user()->email }}
+                </p>
+                <hr>
+                <p class="text-gray-700 my-6">
+                    <strong class="font-semibold">CPF:</strong> {{ auth()->user()->cpf }}
+                </p>
+
+                <button @click="modalOpen = true" style="background-color: #840032"
+                    class="p-2 px-4 text-white font-semibold rounded-md hover:bg-opacity-90 transition-colors">
+                    Atualizar dados
+                </button>
+            </div>
+
+            <div class="flex-1 p-8 flex flex-col items-center justify-center">
+                <form id="photo-form" method="POST" action="{{ route('user.updatePhoto') }}"
+                    enctype="multipart/form-data">
+                    @method('PATCH')
+                    @csrf
+
+                    <input type="file" name="photo" id="photo" class="hidden">
+
+                    <label for="photo" class="cursor-pointer group flex flex-col items-center">
+                        <img class="rounded-full h-32 w-32 object-cover border-4 border-gray-200 group-hover:opacity-80 transition-opacity"
+                            src="{{ auth()->user()->profile_photo_url }}" alt="Foto de Perfil">
+                        <span class="mt-4 text-sm hover:underline" style="color: #840032;">
+                            Trocar foto de perfil
+                        </span>
+                    </label>
+
+                    <button type="submit" class="hidden">Enviar</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div x-show="modalOpen" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center"
+            style="display: none; background-color: rgba(0, 0, 0, 0.5);">
+
+            <div @click.outside="modalOpen = false"
+                class="bg-white rounded-2xl border-1 border-[#840032] shadow-xl p-8 max-w-md w-full mx-4">
+                <h2 class="text-2xl font-black text-center uppercase mb-6" style="font-family: 'Anton SC', sans-serif;">
+                    Atualizar Dados</h2>
+
+                <form method="POST" action="{{ route('user.update') }}">
+                    @method('PATCH')
+                    @csrf
+
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome:</label>
+                        <input type="text" id="name" name="name" value="{{ auth()->user()->name }}"
+                            class="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-[#840032]">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail:</label>
+                        <input type="email" id="email" name="email" value="{{ auth()->user()->email }}"
+                            class="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-[#840032]">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Nova Senha:</label>
+                        <input type="password" id="password" name="password"
+                            class="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-[#840032]"
+                            placeholder="Deixe em branco para não alterar">
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="password_confirmation"
+                            class="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha:</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation"
+                            class="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-[#840032]">
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-2 px-4 bg-[#840032] text-white font-semibold rounded-md hover:bg-[#6a0028] transition-colors">
+                        Confirmar
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </x-layout>
 
 <script>
     const photoInput = document.getElementById('photo');
-
     const photoForm = document.getElementById('photo-form');
 
-    photoInput.addEventListener('change', function () {
+    photoInput.addEventListener('change', function() {
         if (photoInput.files.length > 0) {
             photoForm.submit();
         }
