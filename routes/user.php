@@ -13,11 +13,17 @@ Route::get("/user/login", function () {
     return view("user.login");
 })->name("login");
 
+
 Route::post("/user", [UserController::class, "create"])->name("user.register");
 
 Route::post("/auth", [UserController::class, "authenticate"])->name(
     "user.auth",
 );
+
+
+Route::post('/logout', [UserController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
 Route::get("forgot-password", [
     ForgotPasswordController::class,

@@ -1,7 +1,6 @@
-<header x-data="{ open: false }" class="bg-white shadow-sm relative z-10">
+<header x-data="{ open: false, dropdownOpen: false }" class="bg-white shadow-sm relative z-10">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-4">
-            <!-- Logo -->
             <a href="{{ route('home') }}" class="flex items-center">
                 <img src="{{ asset('images/CertifiCar.svg') }}" alt="CertifiCar Logo" class="h-8 w-auto">
             </a>
@@ -76,17 +75,15 @@
             </nav>
 >>>>>>> Stashed changes
 
-            <!-- Hamburger Button -->
             <div class="md:hidden">
 <<<<<<< Updated upstream
                 <button @click="open = !open"
                     class="text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                     aria-label="Abrir menu">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': !open }" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
+                        <path :class="{ 'hidden': open, 'inline-flex': !open }" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{ 'hidden': !open, 'inline-flex': open }" stroke-linecap="round"
                             stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 =======
                 <button @click="open = !open" class="text-gray-500 hover:text-gray-600 focus:outline-none"
@@ -103,7 +100,6 @@
         </div>
     </div>
 
-    <!-- Mobile Menu -->
     <div x-show="open" @click.away="open = false" x-transition class="md:hidden bg-white shadow-lg absolute w-full">
         <nav class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
 <<<<<<< Updated upstream

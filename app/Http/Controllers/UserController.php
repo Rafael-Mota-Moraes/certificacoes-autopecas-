@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 >>>>>>> Stashed changes
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function create(Request $request): \Illuminate\Http\RedirectResponse
+    public function create(Request $request): RedirectResponse
     {
         $validatedData = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -137,8 +138,8 @@ class UserController extends Controller
         return back()->with(
             "success",
             $user->active
-            ? "Usuário ativado com sucesso!"
-            : "Usuário desativado com sucesso!",
+                ? "Usuário ativado com sucesso!"
+                : "Usuário desativado com sucesso!",
         );
     }
 
@@ -157,5 +158,16 @@ class UserController extends Controller
         return back()
             ->withErrors(["email" => "O email inserido não está cadastrado"])
             ->onlyInput("email");
+    }
+
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }
