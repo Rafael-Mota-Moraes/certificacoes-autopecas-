@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,44 +15,50 @@ class UserController extends Controller
     public function create(Request $request): RedirectResponse
     {
         $validatedData = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'cpf' => [
-                'required',
-                'string',
-                'unique:users,cpf',
+            "name" => "required|string|max:255",
+            "email" => "required|string|email|max:255|unique:users",
+            "cpf" => [
+                "required",
+                "string",
+                "unique:users,cpf",
                 function ($attribute, $value, $fail) {
                     if (!$this->isValidCPF($value)) {
-                        $fail('O campo :attribute não é um CPF válido.');
+                        $fail("O campo :attribute não é um CPF válido.");
                     }
                 },
             ],
-            'password' => 'required|string|min:6|confirmed',
+            "password" => "required|string|min:6|confirmed",
         ]);
 
         if ($validatedData->fails()) {
-            return redirect()->route('register')
+            return redirect()
+                ->route("register")
                 ->withErrors($validatedData)
                 ->withInput(); // withInput() mantém os dados antigos no formulário
         }
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'cpf' => preg_replace('/[^0-9]/', '', $request->cpf),
-            'password' => Hash::make($request->password),
+            "name" => $request->name,
+            "email" => $request->email,
+            "cpf" => preg_replace("/[^0-9]/", "", $request->cpf),
+            "password" => Hash::make($request->password),
         ]);
 
         if (!$user) {
             return back()->with("error", "Erro ao criar usuário");
         }
 
-        return redirect()->route('login')->with('success', 'Cadastro realizado com sucesso! Faça seu login.');
+        return redirect()
+            ->route("login")
+            ->with(
+                "success",
+                "Cadastro realizado com sucesso! Faça seu login.",
+            );
     }
 
     private function isValidCPF(string $cpf): bool
     {
-        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        $cpf = preg_replace("/[^0-9]/", "", $cpf);
 
         if (strlen($cpf) != 11) {
             return false;
@@ -64,7 +70,7 @@ class UserController extends Controller
 
         for ($t = 9; $t < 11; $t++) {
             for ($d = 0, $c = 0; $c < $t; $c++) {
-                $d += $cpf[$c] * (($t + 1) - $c);
+                $d += $cpf[$c] * ($t + 1 - $c);
             }
             $d = ((10 * $d) % 11) % 10;
             if ($cpf[$c] != $d) {
@@ -75,7 +81,7 @@ class UserController extends Controller
         return true;
     }
 
-    public function update(Request $request): \Illuminate\Http\RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         $user = Auth::user();
 
@@ -101,7 +107,21 @@ class UserController extends Controller
         return back()->with("success", "Perfil atualizado com sucesso!");
     }
 
-    public function toggle(Request $request): \Illuminate\Http\RedirectResponse
+    public function updateProfilePhoto(Request $request): RedirectResponse
+    {
+        $request->validate(["photo" => ["required", "image"]]);
+        $user = Auth::user();
+
+        $path = $request->file("photo")->store("profile-photos", "public");
+
+        $user->update([
+            "profile_photo_path" => $path,
+        ]);
+
+        return back()->with("success", "Foto atualizada com sucesso!");
+    }
+
+    public function toggle(): RedirectResponse
     {
         $user = Auth::user();
 
@@ -121,9 +141,9 @@ class UserController extends Controller
                 : "Usuário desativado com sucesso!",
         );
     }
-    public function authenticate(
-        Request $request,
-    ): \Illuminate\Http\RedirectResponse {
+
+    public function authenticate(Request $request): RedirectResponse
+    {
         $credentials = $request->only("email", "password");
 
         if (Auth::attempt($credentials)) {
@@ -139,12 +159,12 @@ class UserController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        Auth::guard("web")->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect("/");
     }
 }

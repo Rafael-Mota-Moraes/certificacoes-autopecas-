@@ -4,4 +4,4 @@ storage
 node_modules
 package-lock.json
 public/hot
-.idea/
+.idea

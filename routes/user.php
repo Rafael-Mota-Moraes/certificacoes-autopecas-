@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::get("/user/register", function () {
     return view("user.register");
@@ -54,4 +54,10 @@ Route::middleware("auth")->group(function () {
     Route::patch("/user/toggle", [UserController::class, "toggle"])->name(
         "user.toggle",
     );
+
+    Route::get('/user/profile', function () {
+        return view('user.profile');
+    })->name("user.profile");
+
+    Route::patch("/user/profile", [UserController::class, "updateProfilePhoto"])->name("user.updatePhoto");
 });

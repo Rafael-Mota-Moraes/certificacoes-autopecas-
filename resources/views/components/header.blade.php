@@ -20,7 +20,9 @@
                     <div class="relative" @click.away="dropdownOpen = false">
                         <button @click="dropdownOpen = !dropdownOpen"
                             class="flex items-center space-x-2 text-gray-600 hover:text-[#840032] focus:outline-none transition-colors border border-gray-300 rounded-md px-3 py-1.5">
-                            <span class="inline-block h-6 w-6 rounded-full bg-gray-300"></span>
+                            <img class="w-10 rounded-3xl" src="{{ auth()->user()->profile_photo_url }}"
+                                alt="Foto do perfil">
+
                             <span>Minha conta</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -32,7 +34,7 @@
                         <div x-show="dropdownOpen" x-transition
                             class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg">
                             <div class="divide-y divide-gray-200">
-                                <a href="#"
+                                <a href="{{ route('user.profile') }}"
                                     class="block px-4 py-2 text-sm text-center font-medium text-[#840032] hover:bg-gray-100">Ver
                                     perfil</a>
                                 <a href="#"
@@ -83,7 +85,8 @@
                 <div class="border-t border-gray-200 pt-4 mt-4">
                     <div class="flex items-center px-3 mb-3">
                         <div class="flex-shrink-0">
-                            <span class="inline-block h-10 w-10 rounded-full bg-gray-200"></span>
+                            <img class="h-10 w-10 rounded-full" src="{{ auth()->user()->profile_photo_url }}"
+                                alt="Foto do perfil">
                         </div>
                         <div class="ml-3">
                             <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
