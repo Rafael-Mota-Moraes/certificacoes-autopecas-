@@ -65,31 +65,74 @@
                             </div>
 
                         </div>
-                    <div class="flex items-center gap-4 pt-4 mt-4">
-                        <button
-                            class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
-                            Atualizar dados
-                        </button>
-                        <button
-                            class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
-                            Desativar
-                        </button>
-                    </div>
-
+                        <div class="flex items-center gap-4 pt-4 mt-4">
+                            <button
+                                type="button"
+                                class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors open-edit-modal-btn"
+                                data-id="{{ $reseller->id }}">
+                                Atualizar dados
+                            </button>
+                            <button
+                                class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
+                                Desativar
+                            </button>
+                        </div>
                     @endforeach
-
                 @endif
 
             </div>
         </div>
     </div>
+    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Editar Revendedora</h2>
+                <div id="modal-form-container">
+                    <p class="text-center">Carregando...</p>
+                </div>
+            </div>
+        </div>
 
-    <div class="fixed bottom-24 right-6 lg:hidden">
-        <button class="w-14 h-14 bg-[#840032] rounded-full flex items-center justify-center text-white shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-        </button>
-    </div>
+        @push('scripts')
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('edit-modal');
+            const modalFormContainer = document.getElementById('modal-form-container');
+            const openModalButtons = document.querySelectorAll('.open-edit-modal-btn');
+
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modalFormContainer.innerHTML = '<p class="text-center">Carregando...</p>';
+
+            openModalButtons.forEach(button => {
+                button.addEventListener('click', async function () {
+                    const resellerId = this.dataset.id;
+                    modal.classList.remove('hidden');
+
+                    try {
+                        const response = await fetch(`/resellers/${resellerId}/edit-form`);
+                        if (!response.ok) throw new Error('Network response was not ok.');
+
+                        const formHtml = await response.text();
+                        modalFormContainer.innerHTML = formHtml;
+                    } catch (error) {
+                        modalFormContainer.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar os dados. Tente novamente.</p>';
+                        console.error('Fetch error:', error);
+                    }
+                });
+            });
+
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal || event.target.classList.contains('close-modal-btn')) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === "Escape") {
+                    closeModal();
+                }
+            });
+        });
+        </script>
+    @endpush
 </x-layout>
