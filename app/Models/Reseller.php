@@ -11,14 +11,10 @@ class Reseller extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'cnpj',
+        'photo',
     ];
 
     public function reviews(): HasMany
@@ -35,10 +31,10 @@ class Reseller extends Model
     }
 
     /**
-     * Get the contact associated with the reseller.
+     * Get the contacts associated with the reseller.
      */
-    public function contact(): HasOne
+    public function contacts(): HasMany
     {
-        return $this->hasOne(Contact::class);
+        return $this->hasMany(Contact::class);
     }
 }

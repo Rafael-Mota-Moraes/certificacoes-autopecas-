@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\AuthController;
 
 use App\Models\Reseller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ResellerController extends Controller
 {
@@ -13,7 +15,13 @@ class ResellerController extends Controller
      */
     public function index()
     {
-        $resellers = Reseller::with(['address', 'contact'])->latest()->paginate(10);
+        $userId = 1;
+
+        $resellers = Reseller::with('address')
+            ->with('contacts')
+            ->where('user_id', $userId)
+            ->get();
+        // 
         return view('resellers.index', compact('resellers'));
     }
 
@@ -31,50 +39,49 @@ class ResellerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-                    'name' => 'required|string|max:255',
-                    'email' => 'required|email|unique:contact,email',
-                    'cnpj' => 'required|string|unique:resellers,cnpj',
-                    'street' => 'required|string|max:255',
-                    'city' => 'required|string|max:255',
-                    'state' => 'required|string|max:255',
-                    'zip_code' => 'required|string|max:20',
-                    'phone' => 'required|string|max:20',
-                    'whatsapp' => 'nullable|string|max:20',
-                ]);
+            'name' => 'required|string|max:255',
+            'cnpj' => 'required|string|unique:resellers,cnpj',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
-                // Use a database transaction to ensure data integrity
-                DB::transaction(function () use ($validated) {
-                    // Create the reseller
-                    $reseller = Reseller::create([
-                        'name' => $validated['name'],
-                        'cnpj' => $validated['cnpj'],
-                    ]);
+            'street' => 'required|string|max:255',
+            'number' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'zip_code' => 'required|string|max:20',
 
-                    // Create the associated address
-                    $reseller->address()->create([
-                        'street' => $validated['street'],
-                        'city' => $validated['city'],
-                        'state' => $validated['state'],
-                        'zip_code' => $validated['zip_code'],
-                    ]);
+            'contacts' => 'required|array|min:1',
+            'contacts.*.phone' => 'required|string|max:20',
+            'contacts.*.email' => 'required|email|unique:contacts,email',
+        ]);
 
-                    // Create the associated contact
-                    $reseller->contact()->create([
-                        'phone' => $validated['phone'],
-                        'email' => $validated['email'],
-                    ]);
-                });
+        DB::transaction(function () use ($validated, $request) {
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('reseller_photos', 'public');
+            }
 
-                return redirect()->route('resellers.index')->with('success', 'Reseller created successfully!');
+            $reseller = Reseller::create([
+                'user_id' => 1,
+                'name' => $validated['name'],
+                'cnpj' => $validated['cnpj'],
+                'photo' => $photoPath,
+            ]);
+
+            $reseller->address()->create($request->only(['street', 'number', 'city', 'state', 'zip_code']));
+            $reseller->contacts()->create($request->only(['phone', 'email']));
+        });
+
+        return redirect()->route('resellers.index')->with('success', 'Reseller created successfully!');
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show(Reseller $reseller)
     {
-        $reseller->load(['address', 'contact']);
-                return view('resellers.show', compact('reseller'));
+        $reseller->load(['address', 'contacts']);
+        return view('resellers.show', compact('reseller'));
     }
 
     /**
@@ -82,8 +89,8 @@ class ResellerController extends Controller
      */
     public function edit(Reseller $reseller)
     {
-        $reseller->load(['address', 'contact']);
-                return view('resellers.edit', compact('reseller'));
+        $reseller->load(['address', 'contacts']);
+        return view('resellers.edit', compact('reseller'));
     }
 
     /**
@@ -92,40 +99,52 @@ class ResellerController extends Controller
     public function update(Request $request, Reseller $reseller)
     {
         $validated = $request->validate([
-                    'name' => 'required|string|max:255',
-                    // Ignore the current reseller's email when checking for uniqueness
-                    'cnpj' => 'required|string|unique:resellers,cnpj,' . $reseller->id,
-                    'email' => 'required|email|unique:contact,email,' . $reseller->id,
-                    'street' => 'required|string|max:255',
-                    'city' => 'required|string|max:255',
-                    'state' => 'required|string|max:255',
-                    'zip_code' => 'required|string|max:20',
-                    'phone' => 'required|string|max:20',
+            'name' => 'required|string|max:255',
+            'cnpj' => 'required|string|unique:resellers,cnpj,' . $reseller->id,
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'street' => 'required|string|max:255',
+            'number' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'zip_code' => 'required|string|max:20',
+            'contacts' => 'required|array|min:1',
+            'contacts.*.phone' => 'required|string|max:20',
+            'contacts.*.email' => 'required|email',
+        ]);
+
+        DB::transaction(function () use ($validated, $reseller, $request) {
+            $photoPath = $reseller->photo;
+            if ($request->hasFile('photo')) {
+                if ($photoPath) {
+                    Storage::disk('public')->delete($photoPath);
+                }
+                $photoPath = $request->file('photo')->store('reseller_photos', 'public');
+            }
+
+            $reseller->update([
+                'name' => $validated['name'],
+                'cnpj' => $validated['cnpj'],
+                'photo' => $photoPath,
+            ]);
+
+            $reseller->address()->updateOrCreate([], [
+                'street' => $validated['street'],
+                'number' => $validated['number'],
+                'city' => $validated['city'],
+                'state' => $validated['state'],
+                'zip_code' => $validated['zip_code'],
+            ]);
+
+            $reseller->contacts()->delete();
+            foreach ($validated['contacts'] as $contactData) {
+                $reseller->contacts()->create([
+                    'phone' => $contactData['phone'],
+                    'email' => $contactData['email'],
                 ]);
+            }
+        });
 
-                DB::transaction(function () use ($validated, $reseller) {
-                    // Update reseller details
-                    $reseller->update([
-                        'name' => $validated['name'],
-                        'cnpj' => $validated['cnpj'],
-                    ]);
-
-                    // Update address details (use updateOrCreate to handle cases where it might not exist)
-                    $reseller->address()->updateOrCreate([], [
-                        'street' => $validated['street'],
-                        'city' => $validated['city'],
-                        'state' => $validated['state'],
-                        'zip_code' => $validated['zip_code'],
-                    ]);
-
-                    // Update contact details
-                    $reseller->contact()->updateOrCreate([], [
-                        'phone' => $validated['phone'],
-                        'email' => $validated['email'],
-                    ]);
-                });
-
-                return redirect()->route('resellers.index')->with('success', 'Reseller updated successfully!');
+        return redirect()->route('resellers.index')->with('success', 'Reseller updated successfully!');
     }
 
     /**
@@ -133,7 +152,15 @@ class ResellerController extends Controller
      */
     public function destroy(Reseller $reseller)
     {
-        $reseller->delete();
+        DB::transaction(function () use ($reseller) {
+            if ($reseller->photo) {
+                Storage::disk('public')->delete($reseller->photo);
+            }
+            $reseller->address()->delete();
+            $reseller->contacts()->delete();
+            $reseller->delete();
+        });
+
         return redirect()->route('resellers.index')->with('success', 'Reseller deleted successfully!');
     }
 }
