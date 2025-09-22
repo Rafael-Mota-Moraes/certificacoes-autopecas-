@@ -4,9 +4,6 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Address>
- */
 class AddressFactory extends Factory
 {
     /**
@@ -18,10 +15,11 @@ class AddressFactory extends Factory
     {
         return [
             'street' => $this->faker->streetName(),
-            'number' => $this->faker->buildingNumber(),
             'city' => $this->faker->city(),
             'state' => $this->faker->stateAbbr(),
             'zip_code' => $this->faker->postcode(),
+            'latitude' => $this->faker->latitude(-33, -2),
+            'longitude' => $this->faker->longitude(-73, -34),
         ];
     }
 }

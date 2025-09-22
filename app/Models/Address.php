@@ -11,12 +11,15 @@ class Address extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
         'street',
         'number',
         'city',
         'state',
         'zip_code',
+        'latitude',
+        'longitude'
     ];
 
     /**

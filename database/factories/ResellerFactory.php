@@ -2,13 +2,20 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
+use App\Models\Contact;
+use App\Models\Reseller;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Reseller>
- */
 class ResellerFactory extends Factory
 {
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Reseller::class;
+
     /**
      * Define the model's default state.
      *
@@ -17,10 +24,26 @@ class ResellerFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => $this->faker->randomNumber(),
-            'name' => $this->faker->name(),
-            'cnpj' => $this->faker->randomNumber(),
-            'photo' => null,
+            'name' => $this->faker->company(),
+            'cnpj' => $this->faker->unique()->numerify('##############'),
         ];
+    }
+
+    /**
+     * Configure the model factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Reseller $reseller) {
+            Address::factory()->create([
+                'reseller_id' => $reseller->id,
+            ]);
+
+            Contact::factory()->create([
+                'reseller_id' => $reseller->id,
+            ]);
+        });
     }
 }
