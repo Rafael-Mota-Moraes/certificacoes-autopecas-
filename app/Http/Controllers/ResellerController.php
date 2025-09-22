@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\Auth;
+use App\Http\Controllers\AuthController;
 
 use App\Models\Reseller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+
 class ResellerController extends Controller
 {
     /**
@@ -14,11 +15,13 @@ class ResellerController extends Controller
      */
     public function index()
     {
-        $userId = Auth::id();
+        $userId = 1;
 
-        $resellers = Reseller::with(['addresses', 'contacts'])
+        $resellers = Reseller::with('address')
+            ->with('contacts')
             ->where('user_id', $userId)
             ->get();
+        // 
         return view('resellers.index', compact('resellers'));
     }
 
@@ -51,16 +54,14 @@ class ResellerController extends Controller
             'contacts.*.email' => 'required|email|unique:contacts,email',
         ]);
 
-        // Use a database transaction to ensure data integrity
         DB::transaction(function () use ($validated, $request) {
             $photoPath = null;
             if ($request->hasFile('photo')) {
                 $photoPath = $request->file('photo')->store('reseller_photos', 'public');
             }
 
-            // Create the reseller
             $reseller = Reseller::create([
-                'user_id' => Auth::id(),
+                'user_id' => 1,
                 'name' => $validated['name'],
                 'cnpj' => $validated['cnpj'],
                 'photo' => $photoPath,
@@ -79,7 +80,6 @@ class ResellerController extends Controller
      */
     public function show(Reseller $reseller)
     {
-        // FIX: Changed 'contacts' to 'contacts'
         $reseller->load(['address', 'contacts']);
         return view('resellers.show', compact('reseller'));
     }
@@ -89,7 +89,6 @@ class ResellerController extends Controller
      */
     public function edit(Reseller $reseller)
     {
-        // FIX: Changed 'contacts' to 'contacts'
         $reseller->load(['address', 'contacts']);
         return view('resellers.edit', compact('reseller'));
     }
@@ -116,7 +115,6 @@ class ResellerController extends Controller
         DB::transaction(function () use ($validated, $reseller, $request) {
             $photoPath = $reseller->photo;
             if ($request->hasFile('photo')) {
-                // Delete old photo if it exists
                 if ($photoPath) {
                     Storage::disk('public')->delete($photoPath);
                 }

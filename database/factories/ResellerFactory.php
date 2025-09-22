@@ -17,6 +17,7 @@ class ResellerFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => $this->faker->randomNumber(),
             'name' => $this->faker->name(),
             'cnpj' => $this->faker->randomNumber(),
             'photo' => null,

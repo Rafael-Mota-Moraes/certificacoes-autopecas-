@@ -15,7 +15,7 @@
                         <p>Nenhuma revendedora encontrada.</p>
                     </div>
                 @else
-                    @foreach ($resellers as $resseler)
+                    @foreach ($resellers as $reseller)
                         <div class="flex flex-col lg:flex-row gap-8 justify-between">
 
                             <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
@@ -65,9 +65,6 @@
                             </div>
 
                         </div>
-
-                    @endforeach
-
                     <div class="flex items-center gap-4 pt-4 mt-4">
                         <button
                             class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
@@ -78,6 +75,9 @@
                             Desativar
                         </button>
                     </div>
+
+                    @endforeach
+
                 @endif
 
             </div>
