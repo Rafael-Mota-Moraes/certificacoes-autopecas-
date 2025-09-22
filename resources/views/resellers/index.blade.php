@@ -1,61 +1,138 @@
-@extends('layouts.app')
+<x-layout>
+    <x-slot:title>
+        Minhas Revendedoras
+    </x-slot:title>
 
-@section('content')
-<div class="max-w-7xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-700">Resellers</h1>
-        <a href="{{ route('resellers.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-            Add New Reseller
-        </a>
-    </div>
+    <div class="font-sans p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-145px)]">
+        <div class="container mx-auto">
+            <h1 class="text-2xl lg:text-3xl font-bold text-center mb-6">
+                MINHAS REVENDEDORAS
+            </h1>
 
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
-            <p>{{ session('success') }}</p>
-        </div>
-    @endif
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                @if($resellers->isEmpty())
+                    <div class="text-center">
+                        <p>Nenhuma revendedora encontrada.</p>
+                    </div>
+                @else
+                    @foreach ($resellers as $reseller)
+                        <div class="flex flex-col lg:flex-row gap-8 justify-between">
 
-    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full leading-normal">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CNPJ</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($resellers as $reseller)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->name }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->contact->email }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->cnpj }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm">{{ $reseller->contact->phone ?? 'N/A' }}</td>
-                            <td class="px-5 py-4 border-b border-gray-200 text-sm text-center">
-                                <div class="flex item-center justify-center space-x-2">
-                                    <a href="{{ route('resellers.edit', $reseller) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">Edit</a>
-                                    <form action="{{ route('resellers.destroy', $reseller) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 font-medium">Delete</button>
-                                    </form>
+                            <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-1 gap-x-8 gap-y-4">
+                                    <div class="border-b-1 border-gray-300">
+                                        <h3 class="font-semibold text-gray-600">Nome da revendedora:</h3>
+                                        <p class="text-gray-600">{{$reseller->name}}</p>
+                                    </div>
+                                    <div class="border-b-1 border-gray-300">
+                                        <h3 class="font-semibold text-gray-600">CNPJ:</h3>
+                                        <p class="text-gray-600">{{$reseller->cnpj}}</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-600">Endereço:</h3>
+                                        <p class="text-gray-600">
+                                            {{ $reseller->address ? $reseller->address->street . ', ' . $reseller->address->number : 'N/A'  }}
+                                        </p>
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-10 text-gray-500">No resellers found.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-            {{ $resellers->links() }}
+                            </div>
+
+                            <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-1 gap-x-8 gap-y-4">
+                                    @if($reseller->contacts->isNotEmpty())
+                                        <div class="border-b-1 border-gray-300">
+                                            <h3 class="font-semibold text-gray-600">Contato:</h3>
+                                            <p class="text-gray-600">Telefone: {{ $reseller->contacts->first()->phone }}</p>
+                                        </div>
+                                        <div class="border-b-1 border-gray-300">
+                                            <h3 class="font-semibold text-gray-600">E-mail:</h3>
+                                            <p class="text-gray-600">{{ $reseller->contacts->first()->email }}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="w-full lg:w-1/3 flex flex-col items-center justify-center space-y-2">
+                                @if($reseller->photo)
+                                    <img src="{{ asset('storage/' . $reseller->photo) }}" alt="Reseller Photo"
+                                        class="object-cover w-full h-full rounded-md">
+                                @else
+                                    <span class="text-gray-500">Sem foto</span>
+                                @endif
+                                <button class="text-sm text-[#840032] font-semibold hover:underline">
+                                    Trocar foto
+                                </button>
+                            </div>
+
+                        </div>
+                        <div class="flex items-center gap-4 pt-4 mt-4">
+                            <button
+                                type="button"
+                                class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors open-edit-modal-btn"
+                                data-id="{{ $reseller->id }}">
+                                Atualizar dados
+                            </button>
+                            <button
+                                class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
+                                Desativar
+                            </button>
+                        </div>
+                    @endforeach
+                @endif
+
+            </div>
         </div>
     </div>
-</div>
-@endsection
+    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Editar Revendedora</h2>
+                <div id="modal-form-container">
+                    <p class="text-center">Carregando...</p>
+                </div>
+            </div>
+        </div>
+
+        @push('scripts')
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('edit-modal');
+            const modalFormContainer = document.getElementById('modal-form-container');
+            const openModalButtons = document.querySelectorAll('.open-edit-modal-btn');
+
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modalFormContainer.innerHTML = '<p class="text-center">Carregando...</p>';
+
+            openModalButtons.forEach(button => {
+                button.addEventListener('click', async function () {
+                    const resellerId = this.dataset.id;
+                    modal.classList.remove('hidden');
+
+                    try {
+                        const response = await fetch(`/resellers/${resellerId}/edit-form`);
+                        if (!response.ok) throw new Error('Network response was not ok.');
+
+                        const formHtml = await response.text();
+                        modalFormContainer.innerHTML = formHtml;
+                    } catch (error) {
+                        modalFormContainer.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar os dados. Tente novamente.</p>';
+                        console.error('Fetch error:', error);
+                    }
+                });
+            });
+
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal || event.target.classList.contains('close-modal-btn')) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === "Escape") {
+                    closeModal();
+                }
+            });
+        });
+        </script>
+    @endpush
+</x-layout>

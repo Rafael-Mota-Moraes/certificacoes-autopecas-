@@ -10,12 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('resellers', function (Blueprint $table) {
+        Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
-            $table->string('name');
-            $table->string('cnpj')->unique();
-            $table->string('photo')->nullable();
+            // Foreign key to link with the resellers table
+            $table->foreignId('reseller_id')->constrained()->onDelete('cascade');
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('resellers');
+        Schema::dropIfExists('contacts');
     }
 };
