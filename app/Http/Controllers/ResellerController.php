@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\Auth;
 
 use App\Models\Reseller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
 class ResellerController extends Controller
 {
     /**
@@ -14,8 +14,11 @@ class ResellerController extends Controller
      */
     public function index()
     {
-        // FIX: Changed 'contacts' to 'contacts' to match the HasMany relationship
-        $resellers = Reseller::with(['address', 'contacts'])->latest()->paginate(10);
+        $userId = Auth::id();
+
+        $resellers = Reseller::with(['addresses', 'contacts'])
+            ->where('user_id', $userId)
+            ->get();
         return view('resellers.index', compact('resellers'));
     }
 
@@ -57,27 +60,14 @@ class ResellerController extends Controller
 
             // Create the reseller
             $reseller = Reseller::create([
+                'user_id' => Auth::id(),
                 'name' => $validated['name'],
                 'cnpj' => $validated['cnpj'],
                 'photo' => $photoPath,
             ]);
 
-            // Create the associated address using the corrected flat keys
-            $reseller->address()->create([
-                'street' => $validated['street'],
-                'number' => $validated['number'],
-                'city' => $validated['city'],
-                'state' => $validated['state'],
-                'zip_code' => $validated['zip_code'],
-            ]);
-
-            // Create the associated contacts using the corrected 'contacts' array
-            foreach ($validated['contacts'] as $contactData) {
-                $reseller->contacts()->create([
-                    'phone' => $contactData['phone'],
-                    'email' => $contactData['email'],
-                ]);
-            }
+            $reseller->address()->create($request->only(['street', 'number', 'city', 'state', 'zip_code']));
+            $reseller->contacts()->create($request->only(['phone', 'email']));
         });
 
         return redirect()->route('resellers.index')->with('success', 'Reseller created successfully!');

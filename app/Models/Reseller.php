@@ -10,12 +10,6 @@ class Reseller extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $table = "resellers";
     protected $fillable = [
         'name',
         'cnpj',

@@ -30,27 +30,35 @@
                                     </div>
                                     <div>
                                         <h3 class="font-semibold text-gray-600">Endereço:</h3>
-                                        <p class="text-gray-600"></p>
+                                        <p class="text-gray-600">
+                                            {{ $reseller->address ? $reseller->address->street . ', ' . $reseller->address->number : 'N/A'  }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
                                 <div class="grid grid-cols-1 sm:grid-cols-1 gap-x-8 gap-y-4">
-                                    <div class="border-b-1 border-gray-300">
-                                        <h3 class="font-semibold text-gray-600">Contato:</h3>
-                                        <p class="text-gray-600">Telefone: </p>
-                                    </div>
-                                    <div class="border-b-1 border-gray-300">
-                                        <h3 class="font-semibold text-gray-600">E-mail:</h3>
-                                        <p class="text-gray-600"></p>
-                                    </div>
+                                    @if($reseller->contacts->isNotEmpty())
+                                        <div class="border-b-1 border-gray-300">
+                                            <h3 class="font-semibold text-gray-600">Contato:</h3>
+                                            <p class="text-gray-600">Telefone: {{ $reseller->contacts->first()->phone }}</p>
+                                        </div>
+                                        <div class="border-b-1 border-gray-300">
+                                            <h3 class="font-semibold text-gray-600">E-mail:</h3>
+                                            <p class="text-gray-600">{{ $reseller->contacts->first()->email }}</p>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
                             <div class="w-full lg:w-1/3 flex flex-col items-center justify-center space-y-2">
-                                <div class="w-40 h-40 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
-                                </div>
+                                @if($reseller->photo)
+                                    <img src="{{ asset('storage/' . $reseller->photo) }}" alt="Reseller Photo"
+                                        class="object-cover w-full h-full rounded-md">
+                                @else
+                                    <span class="text-gray-500">Sem foto</span>
+                                @endif
                                 <button class="text-sm text-[#840032] font-semibold hover:underline">
                                     Trocar foto
                                 </button>
