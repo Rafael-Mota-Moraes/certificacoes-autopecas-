@@ -38,10 +38,10 @@
                                 <a href="{{ route('user.profile') }}"
                                    class="block px-4 py-2 text-sm text-center font-medium text-[#840032] hover:bg-gray-100">Ver
                                     perfil</a>
-                                <a href="#"
+                                <a href="{{route("resellers.create")}}"
                                    class="block px-4 py-2 text-sm text-center font-medium text-[#840032] hover:bg-gray-100">Cadastrar
                                     revendedora</a>
-                                <a href="#"
+                                <a href="{{route("resellers.index")}}"
                                    class="block px-4 py-2 text-sm text-center font-medium text-[#840032] hover:bg-gray-100">Minhas
                                     revendedoras</a>
 
@@ -104,13 +104,13 @@
 
                     <hr class="text-gray-50">
 
-                    <a href="#"
+                    <a href="{{route("resellers.create")}}"
                        class="block px-3 py-2 rounded-md text-base font-medium text-[#840032]  transition-colors">Cadastrar
                         revendedora</a>
 
                     <hr class="text-gray-50">
 
-                    <a href="#"
+                    <a href="{{route("resellers.index")}}"
                        class="block px-3 py-2 rounded-md text-base font-medium text-[#840032]  transition-colors">Minhas
                         revendedoras</a>
 

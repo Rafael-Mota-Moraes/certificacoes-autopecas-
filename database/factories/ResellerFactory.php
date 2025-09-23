@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Address;
 use App\Models\Contact;
 use App\Models\Reseller;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ResellerFactory extends Factory
@@ -26,6 +27,8 @@ class ResellerFactory extends Factory
         return [
             'name' => $this->faker->company(),
             'cnpj' => $this->faker->unique()->numerify('##############'),
+            'photo' => null,
+            'user_id' => User::inRandomOrder()->first()->id,
         ];
     }
 
