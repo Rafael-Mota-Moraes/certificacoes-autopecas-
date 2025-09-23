@@ -5,134 +5,152 @@
 
     <div class="font-sans p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-145px)]">
         <div class="container mx-auto">
-            <h1 class="text-2xl lg:text-3xl font-bold text-center mb-6">
-                MINHAS REVENDEDORAS
+            <h1 class="text-2xl lg:text-3xl font-bold text-center mb-8 uppercase text-gray-800">
+                Minhas Revendedoras
             </h1>
 
-            <div class="bg-white p-8 rounded-xl shadow-lg">
-                @if($resellers->isEmpty())
-                    <div class="text-center">
-                        <p>Nenhuma revendedora encontrada.</p>
-                    </div>
-                @else
+            @if($resellers->isEmpty())
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <p class="text-gray-600">Nenhuma revendedora encontrada.</p>
+                </div>
+            @else
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+
                     @foreach ($resellers as $reseller)
-                        <div class="flex flex-col lg:flex-row gap-8 justify-between">
+                        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col transition-transform hover:scale-105 duration-300">
 
-                            <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
-                                <div class="grid grid-cols-1 sm:grid-cols-1 gap-x-8 gap-y-4">
-                                    <div class="border-b-1 border-gray-300">
-                                        <h3 class="font-semibold text-gray-600">Nome da revendedora:</h3>
-                                        <p class="text-gray-600">{{$reseller->name}}</p>
-                                    </div>
-                                    <div class="border-b-1 border-gray-300">
-                                        <h3 class="font-semibold text-gray-600">CNPJ:</h3>
-                                        <p class="text-gray-600">{{$reseller->cnpj}}</p>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-600">Endereço:</h3>
-                                        <p class="text-gray-600">
-                                            {{ $reseller->address ? $reseller->address->street . ', ' . $reseller->address->number : 'N/A'  }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex-1 space-y-4 border-r border-gray-300 p-6">
-                                <div class="grid grid-cols-1 sm:grid-cols-1 gap-x-8 gap-y-4">
-                                    @if($reseller->contacts->isNotEmpty())
-                                        <div class="border-b-1 border-gray-300">
-                                            <h3 class="font-semibold text-gray-600">Contato:</h3>
-                                            <p class="text-gray-600">Telefone: {{ $reseller->contacts->first()->phone }}</p>
-                                        </div>
-                                        <div class="border-b-1 border-gray-300">
-                                            <h3 class="font-semibold text-gray-600">E-mail:</h3>
-                                            <p class="text-gray-600">{{ $reseller->contacts->first()->email }}</p>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="w-full lg:w-1/3 flex flex-col items-center justify-center space-y-2">
+                            <div class="relative w-full h-48 mb-4">
                                 @if($reseller->photo)
-                                    <img src="{{ asset('storage/' . $reseller->photo) }}" alt="Reseller Photo"
-                                        class="object-cover w-full h-full rounded-md">
+                                    <img src="{{ asset('storage/' . $reseller->photo) }}"
+                                         alt="Foto de {{ $reseller->name }}"
+                                         class="object-cover w-full h-full rounded-md">
                                 @else
-                                    <span class="text-gray-500">Sem foto</span>
+                                    <div class="w-full h-full rounded-md bg-gray-200 flex items-center justify-center">
+                                        <span class="text-gray-500">Sem foto</span>
+                                    </div>
                                 @endif
-                                <button class="text-sm text-[#840032] font-semibold hover:underline">
+                                <button class="absolute bottom-2 right-2 text-xs bg-black bg-opacity-50 text-white px-2 py-1 rounded-md hover:bg-opacity-75">
                                     Trocar foto
                                 </button>
                             </div>
 
-                        </div>
-                        <div class="flex items-center gap-4 pt-4 mt-4">
-                            <button
-                                type="button"
-                                class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors open-edit-modal-btn"
-                                data-id="{{ $reseller->id }}">
-                                Atualizar dados
-                            </button>
-                            <button
-                                class="w-full sm:w-auto bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] transition-colors">
-                                Desativar
-                            </button>
+                            {{-- INFORMAÇÕES --}}
+                            <div class="flex-grow space-y-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-800 truncate">{{$reseller->name}}</h2>
+                                    <p class="text-sm text-gray-500">CNPJ: {{$reseller->cnpj}}</p>
+                                </div>
+
+                                <hr>
+
+                                <div>
+                                    <h3 class="font-semibold text-gray-700">Endereço:</h3>
+                                    <p class="text-sm text-gray-600">
+                                        {{ $reseller->address ? $reseller->address->street . ', ' . $reseller->address->number : 'Não informado'  }}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <h3 class="font-semibold text-gray-700">Contatos:</h3>
+                                    @if($reseller->contacts->isNotEmpty())
+                                        <p class="text-sm text-gray-600">
+                                            Tel: {{ $reseller->contacts->first()->phone ?? 'N/A' }}</p>
+                                        <p class="text-sm text-gray-600">
+                                            Email: {{ $reseller->contacts->first()->email ?? 'N/A' }}</p>
+                                    @else
+                                        <p class="text-sm text-gray-500">Nenhum contato cadastrado.</p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- BOTÕES DE AÇÃO --}}
+                            <div class="mt-auto pt-6 flex flex-col sm:flex-row items-center gap-3">
+                                <button
+                                        type="button"
+                                        class="w-full bg-[#840032] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors open-edit-modal-btn"
+                                        data-id="{{ $reseller->id }}">
+                                    Atualizar dados
+                                </button>
+                                <button
+                                        class="w-full bg-gray-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-gray-600 transition-colors">
+                                    Desativar
+                                </button>
+                            </div>
                         </div>
                     @endforeach
-                @endif
+                </div>
+            @endif
 
-            </div>
         </div>
     </div>
     <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
-            <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Editar Revendedora</h2>
-                <div id="modal-form-container">
-                    <p class="text-center">Carregando...</p>
-                </div>
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Editar Revendedora</h2>
+            <div id="modal-form-container">
+                <p class="text-center">Carregando...</p>
             </div>
         </div>
-
-        @push('scripts')
+    </div>
+    @push('scripts')
         <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('edit-modal');
-            const modalFormContainer = document.getElementById('modal-form-container');
-            const openModalButtons = document.querySelectorAll('.open-edit-modal-btn');
+            document.addEventListener('DOMContentLoaded', function () {
+                // 1. Seleciona os elementos do modal uma única vez
+                const modal = document.getElementById('edit-modal');
+                const modalFormContainer = document.getElementById('modal-form-container');
+                const openModalButtons = document.querySelectorAll('.open-edit-modal-btn');
 
-            const closeModal = () => {
-                modal.classList.add('hidden');
-                modalFormContainer.innerHTML = '<p class="text-center">Carregando...</p>';
+                // 2. Função para fechar o modal
+                const closeModal = () => {
+                    modal.classList.add('hidden');
+                    // Limpa o conteúdo do formulário ao fechar para não mostrar dados antigos
+                    modalFormContainer.innerHTML = '<p class="text-center">Carregando...</p>';
+                };
 
-            openModalButtons.forEach(button => {
-                button.addEventListener('click', async function () {
-                    const resellerId = this.dataset.id;
-                    modal.classList.remove('hidden');
+                // 3. Adiciona o listener para CADA botão "Atualizar dados"
+                openModalButtons.forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const resellerId = this.dataset.id;
+                        modal.classList.remove('hidden'); // Mostra o modal
 
-                    try {
-                        const response = await fetch(`/resellers/${resellerId}/edit-form`);
-                        if (!response.ok) throw new Error('Network response was not ok.');
+                        try {
+                            const response = await fetch(`/resellers/${resellerId}/edit-form`);
+                            if (!response.ok) {
+                                throw new Error('A resposta da rede não foi OK.');
+                            }
 
-                        const formHtml = await response.text();
-                        modalFormContainer.innerHTML = formHtml;
-                    } catch (error) {
-                        modalFormContainer.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar os dados. Tente novamente.</p>';
-                        console.error('Fetch error:', error);
+                            const formHtml = await response.text();
+                            modalFormContainer.innerHTML = formHtml;
+
+                        } catch (error) {
+                            modalFormContainer.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar os dados. Tente novamente.</p>';
+                            console.error('Erro no fetch:', error);
+                        }
+                    });
+                });
+
+                // 4. Adiciona listeners para fechar o modal
+
+                // Clicando fora do conteúdo do modal (no fundo escuro)
+                modal.addEventListener('click', function (event) {
+                    if (event.target === modal) {
+                        closeModal();
+                    }
+                });
+
+                // Pressionando a tecla "Escape"
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === "Escape" && !modal.classList.contains('hidden')) {
+                        closeModal();
+                    }
+                });
+
+                // Clicando em um botão de fechar que possa vir dentro do HTML carregado
+                modal.addEventListener('click', function (event) {
+                    if (event.target.classList.contains('close-modal-btn')) {
+                        closeModal();
                     }
                 });
             });
-
-            modal.addEventListener('click', function (event) {
-                if (event.target === modal || event.target.classList.contains('close-modal-btn')) {
-                    closeModal();
-                }
-            });
-
-            document.addEventListener('keydown', function (event) {
-                if (event.key === "Escape") {
-                    closeModal();
-                }
-            });
-        });
         </script>
     @endpush
 </x-layout>

@@ -16,6 +16,7 @@ class AddressFactory extends Factory
         return [
             'street' => $this->faker->streetName(),
             'city' => $this->faker->city(),
+            'number' => $this->faker->numberBetween(1, 100),
             'state' => $this->faker->stateAbbr(),
             'zip_code' => $this->faker->postcode(),
             'latitude' => $this->faker->latitude(-33, -2),

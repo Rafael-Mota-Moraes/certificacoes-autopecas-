@@ -1,6 +1,14 @@
 <x-layout>
 
     <style>
+
+        @media (max-width: 767px) {
+            .swiper-button-prev,
+            .swiper-button-next {
+                display: none !important;
+            }
+        }
+
         .swiper-button-prev,
         .swiper-button-next {
             color: #FFFFFF !important;
@@ -35,19 +43,14 @@
             background-color: #840032 !important;
             opacity: 1;
         }
-
-
     </style>
     <x-slot:title>
         Página Inicial
     </x-slot:title>
 
     <div class="container mx-auto px-4 py-12 text-center">
-        <h2 class="text-3xl font-extrabold text-gray-800 uppercase mb-4">Encontre a revendedora mais próxima</h2>
 
-        <div class="max-w-md mx-auto mb-6 flex items-center border border-gray-300 rounded-full shadow-sm">
-            <input type="text" id="search-input" placeholder="Digite seu CEP ou cidade"
-                   class="w-full px-4 py-2 bg-transparent rounded-full focus:outline-none">
+        <div class="max-w-md mx-auto mb-6 flex items-center text-gray bg-white rounded-full shadow-sm">
             <button id="search-button" class="px-4 text-gray-500 hover:text-[#840032]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
@@ -55,7 +58,10 @@
                           clip-rule="evenodd"/>
                 </svg>
             </button>
+            <input type="text" id="search-input" placeholder="Digite sua Cidade"
+                   class="w-full py-2 bg-transparent focus:outline-none">
         </div>
+        <h2 class="text-3xl font-extrabold text-gray-800 uppercase mb-4">Encontre a revendedora mais próxima</h2>
 
         <div id="error" class="text-red-500 mb-6"></div>
 
@@ -79,9 +85,8 @@
                         @endforeach
                     </div>
                 </div>
-
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev hidden lg:block"></div>
+                <div class="swiper-button-next hidden lg:block"></div>
             </div>
         </section>
 
