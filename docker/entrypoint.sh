@@ -20,8 +20,7 @@ mkdir -p storage/framework/views
 mkdir -p storage/framework/cache/data
 
 echo "Ajustando permissões de diretório..."
-chmod -R 777 storage bootstrap/cache
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 storage bootstrap/cache
 
 echo "Verificando a APP_KEY..."
 if [ -z "$(grep -E '^APP_KEY=' .env | cut -d '=' -f2-)" ]; then
