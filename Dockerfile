@@ -30,8 +30,6 @@ COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 RUN addgroup -g $uid -S $user
 RUN adduser -u $uid -S $user -G $user
 
-# 🔥 AQUI É A MUDANÇA PRINCIPAL
-# Criar os diretórios e dar as permissões ANTES de trocar de usuário
 RUN mkdir -p storage/framework/sessions \
     storage/framework/views \
     storage/framework/cache/data \

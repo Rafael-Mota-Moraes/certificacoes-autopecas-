@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Comment extends Model
 {
-    protected $fillable = ['comment'];
+    protected $fillable = ['comment', 'rate'];
 
     public function reviews(): BelongsToMany
     {

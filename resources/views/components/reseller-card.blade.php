@@ -26,10 +26,10 @@
         </p>
 
         <div class="flex justify-center items-center">
-            <a href="#"
+            <button @click="modalOpen = true; selectedResellerId = {{ $reseller->id }}"
                 class="mt-auto block w-25 bg-[#840032] text-white text-center font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
                 Avaliar
-            </a>
+            </button>
             <a href="#"
                 class="mt-auto block w-25 mx-2 text-center font-semibold py-2 px-4 rounded-md transition-colors border-1"
                 style="color: #840032;">

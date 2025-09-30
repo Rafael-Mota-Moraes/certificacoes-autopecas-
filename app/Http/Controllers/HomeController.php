@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reseller;
+use App\Models\Comment;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -27,10 +28,13 @@ class HomeController extends Controller
             ->offset(5)
             ->get();
 
+        $comments = Comment::all();
+
         return view('home', [
             'topRatedResellers' => $topRatedReseller,
             'otherResellers' => $otherResellers,
             'resellersForMap' => $resellersForMap,
+            'comments' => $comments
         ]);
     }
 }
