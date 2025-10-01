@@ -83,13 +83,10 @@
 
         </div>
     </div>
-    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Editar Revendedora</h2>
-            <div id="modal-form-container">
+    <div id="edit-modal" class="fixed inset-0 flex items-center justify-center p-4 hidden z-50" style="background-color: rgba(0, 0, 0, 0.9);">
+            <div id="modal-form-container" class="bg-white rounded-lg" style="border-color: rgba(153, 0, 0, 1); border-style: solid; border-width: 2px;">
                 <p class="text-center">Carregando...</p>
             </div>
-        </div>
     </div>
     @push('scripts')
         <script>
@@ -103,17 +100,18 @@
                 const closeModal = () => {
                     modal.classList.add('hidden');
                     // Limpa o conteúdo do formulário ao fechar para não mostrar dados antigos
-                    modalFormContainer.innerHTML = '<p class="text-center">Carregando...</p>';
+                    modalFormContainer.innerHTML = '<p class="text-center bg-transparent">Carregando...</p>';
                 };
 
                 // 3. Adiciona o listener para CADA botão "Atualizar dados"
                 openModalButtons.forEach(button => {
                     button.addEventListener('click', async function () {
                         const resellerId = this.dataset.id;
+                        console.log("reseller id:", resellerId);
                         modal.classList.remove('hidden'); // Mostra o modal
 
                         try {
-                            const response = await fetch(`/resellers/${resellerId}/edit-form`);
+                            const response = await fetch(`/resellers/${resellerId}/edit`);
                             if (!response.ok) {
                                 throw new Error('A resposta da rede não foi OK.');
                             }
