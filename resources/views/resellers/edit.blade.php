@@ -3,22 +3,26 @@
         <div class="w-full lg:max-w-4xl rounded-md">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Atualizar revendedora</h1>
             <div>
-                <form action="{{ route('resellers.store') }}" method="POST" class="space-y-6"
+                >
+                <form action="{{ route('resellers.update', $reseller) }}" method="POST" class="space-y-6"
                     enctype="multipart/form-data">
                     @csrf
+                    @method('PUT')
                     <div class="flex flex-col lg:flex-row lg:space-x-12">
 
                         <div class="w-full lg:w-1/2 space-y-4">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">*Nome:</label>
-                                <input type="text" id="name" name="name" value="{{ old('name') }}" required
+                                <input type="text" id="name" name="name" value="{{ $reseller->name }}"
+                                    placeholder="{{ $reseller->name }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                 @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
                                 <label for="cnpj" class="block text-sm font-medium text-gray-700">*CNPJ:</label>
-                                <input type="text" id="cnpj" name="cnpj" value="{{ old('cnpj') }}" required
+                                <input type="text" id="cnpj" name="cnpj" value="{{ $reseller->cnpj }}"
+                                    placeholder="{{ $reseller->cnpj }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                 @error('cnpj') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
@@ -27,15 +31,17 @@
                             <div class="flex space-x-4">
                                 <div class="flex-1">
                                     <label for="zip_code" class="block text-sm font-medium text-gray-700">*CEP:</label>
-                                    <input type="text" id="zip_code" name="zip_code" value="{{ old('zip_code') }}"
-                                        required
+                                    <input type="text" id="zip_code" name="zip_code"
+                                        value="{{ $reseller->address->zip_code }}"
+                                        placeholder="{{ $reseller->address->zip_code }}"
                                         class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                     @error('zip_code') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="flex-1">
                                     <label for="state" class="block text-sm font-medium text-gray-700">Estado:</label>
-                                    <input type="text" id="state" name="state" value="{{ old('state') }}"
+                                    <input type="text" id="state" name="state" value="{{ $reseller->address->state }}"
+                                        placeholder="{{ $reseller->address->state }}"
                                         class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                     @error('state') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -44,14 +50,16 @@
 
                             <div>
                                 <label for="city" class="block text-sm font-medium text-gray-700">Cidade:</label>
-                                <input type="text" id="city" name="city" value="{{ old('city') }}"
+                                <input type="text" id="city" name="city" value="{{ $reseller->address->city }}"
+                                    placeholder="{{ $reseller->address->city }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                 @error('city') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
                                 <label for="street" class="block text-sm font-medium text-gray-700">Rua:</label>
-                                <input type="text" id="street" name="street" value="{{ old('street') }}"
+                                <input type="text" id="street" name="street" value="{{ $reseller->address->street }}"
+                                    placeholder="{{ $reseller->address->street }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                 @error('street') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
@@ -59,7 +67,9 @@
                             <div class="flex space-x-4">
                                 <div class="w-1/3">
                                     <label for="number" class="block text-sm font-medium text-gray-700">Número:</label>
-                                    <input type="text" id="number" name="number" value="{{ old('number') }}"
+                                    <input type="text" id="number" name="number"
+                                        value="{{ $reseller->address->number }}"
+                                        placeholder="{{ $reseller->address->number }}"
                                         class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                     @error('number') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -90,29 +100,31 @@
                         <div class="w-full lg:w-1/2 mt-8 lg:mt-0">
                             <p class="text-lg font-semibold mb-2">Lista de Contatos</p>
                             <div id="contacts-container" class="space-y-4">
-                                <div
-                                    class="grid grid-cols-1 border border-gray-300 border-solid p-4 rounded-lg space-y-4">
-                                    <div>
-                                        <label for="phone"
-                                            class="block text-sm font-medium text-gray-700">*Telefone:</label>
-                                        <input type="text" id="phone" name="contacts[0][phone]"
-                                            value="{{ old('contacts.0.phone') }}" required
-                                            class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                        @error('contacts.0.phone') <p class="text-red-500 text-xs mt-1">
-                                            {{ $message }}
-                                        </p> @enderror
+                                @foreach ($reseller->contacts as $index => $contact)
+                                    <div
+                                        class="grid grid-cols-1 border border-gray-300 border-solid p-4 rounded-lg space-y-4">
+                                        <div>
+                                            <label for="phone_{{ $index }}"
+                                                class="block text-sm font-medium text-gray-700">*Telefone:</label>
+                                            <input type="text" id="phone_{{ $index }}" name="contacts[{{ $index }}][phone]"
+                                                value="{{ old('contacts.' . $index . '.phone', $contact->phone) }}" required
+                                                class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
+                                            @error('contacts.' . $index . '.phone')
+                                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label for="email_{{ $index }}"
+                                                class="block text-sm font-medium text-gray-700">*E-mail:</label>
+                                            <input type="email" id="email_{{ $index }}" name="contacts[{{ $index }}][email]"
+                                                value="{{ old('contacts.' . $index . '.email', $contact->email) }}" required
+                                                class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
+                                            @error('contacts.' . $index . '.email')
+                                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label for="email"
-                                            class="block text-sm font-medium text-gray-700">*E-mail:</label>
-                                        <input type="email" id="email" name="contacts[0][email]"
-                                            value="{{ old('contacts.0.email') }}" required
-                                            class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                        @error('contacts.0.email') <p class="text-red-500 text-xs mt-1">
-                                            {{ $message }}
-                                        </p> @enderror
-                                    </div>
-                                </div>
+                                @endforeach
                             </div>
                             <div class="flex justify-end mt-4">
                                 <button type="button" id="add-contact-btn"

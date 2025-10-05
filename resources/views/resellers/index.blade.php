@@ -71,10 +71,14 @@
                                         data-id="{{ $reseller->id }}">
                                     Atualizar dados
                                 </button>
-                                <button
+                                <form action="{{ route('resellers.destroy', $reseller) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
                                         class="w-full bg-gray-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-gray-600 transition-colors">
-                                    Desativar
-                                </button>
+                                        Desativar
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     @endforeach

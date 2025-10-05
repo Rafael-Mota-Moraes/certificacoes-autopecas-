@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\AuthController;
 
 use App\Models\Reseller;
 use Illuminate\Http\Request;
