@@ -1,8 +1,8 @@
 <x-layout>
 
     <style>
-
         @media (max-width: 767px) {
+
             .swiper-button-prev,
             .swiper-button-next {
                 display: none !important;
@@ -47,65 +47,144 @@
     <x-slot:title>
         Página Inicial
     </x-slot:title>
+    <div x-data="{
+        modalOpen: false,
+        selectedResellerId: null,
+        selectedRating: 0,
+        selectedComments: [],
+        allComments: {{ $comments->isNotEmpty() ? $comments->toJson() : '[]' }}
+    }">
+        <div class="container mx-auto px-4 py-12 text-center">
 
-    <div class="container mx-auto px-4 py-12 text-center">
+            <div class="max-w-md mx-auto mb-6 flex items-center text-gray bg-white rounded-full shadow-sm">
+                <button id="search-button" class="px-4 text-gray-500 hover:text-[#840032]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <input type="text" id="search-input" placeholder="Digite sua Cidade"
+                    class="w-full py-2 bg-transparent focus:outline-none">
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-800 uppercase mb-4">Encontre a revendedora mais próxima</h2>
 
-        <div class="max-w-md mx-auto mb-6 flex items-center text-gray bg-white rounded-full shadow-sm">
-            <button id="search-button" class="px-4 text-gray-500 hover:text-[#840032]">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                          clip-rule="evenodd"/>
-                </svg>
-            </button>
-            <input type="text" id="search-input" placeholder="Digite sua Cidade"
-                   class="w-full py-2 bg-transparent focus:outline-none">
+            <div id="error" class="text-red-500 mb-6"></div>
+
+            <div id="map" class="h-96 w-full max-w-4xl mx-auto rounded-lg shadow-lg z-1"></div>
+
         </div>
-        <h2 class="text-3xl font-extrabold text-gray-800 uppercase mb-4">Encontre a revendedora mais próxima</h2>
 
-        <div id="error" class="text-red-500 mb-6"></div>
+        <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">Revendedoras
+            mais
+            avaliadas</h2>
 
-        <div id="map" class="h-96 w-full max-w-4xl mx-auto rounded-lg shadow-lg z-10"></div>
+        <div class="relative">
+            <section class="bg-[#840032] py-12">
+                <div class="container mx-auto px-4">
 
-    </div>
-
-    <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">Revendedoras mais
-        avaliadas</h2>
-
-    <div class="relative">
-        <section class="bg-[#840032] py-12">
-            <div class="container mx-auto px-4">
-
-                <div class="swiper top-rated-swiper">
-                    <div class="swiper-wrapper">
-                        @foreach ($topRatedResellers as $reseller)
-                            <div class="swiper-slide">
-                                <x-reseller-card :reseller="$reseller"/>
-                            </div>
-                        @endforeach
+                    <div class="swiper top-rated-swiper">
+                        <div class="swiper-wrapper">
+                            @foreach ($topRatedResellers as $reseller)
+                                <div class="swiper-slide">
+                                    <x-reseller-card :reseller="$reseller" />
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
+                    <div class="swiper-button-prev hidden lg:block"></div>
+                    <div class="swiper-button-next hidden lg:block"></div>
                 </div>
-                <div class="swiper-button-prev hidden lg:block"></div>
-                <div class="swiper-button-next hidden lg:block"></div>
+            </section>
+
+            <div class="swiper-pagination top-rated-swiper-pagination"></div>
+        </div>
+
+
+        <section class="py-16">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    @foreach ($otherResellers as $reseller)
+                        <x-reseller-card :reseller="$reseller" />
+                    @endforeach
+                </div>
             </div>
         </section>
 
-        <div class="swiper-pagination top-rated-swiper-pagination"></div>
-    </div>
+        <div x-show="modalOpen" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center "
+            style="display: none; background-color: rgba(0, 0, 0, 0.5);">
+
+            <div @click.outside="modalOpen = false"
+                class="bg-white rounded-2xl border-2 border-[#840032] shadow-xl p-8 max-w-xl w-full mx-4">
+                <h2 class="text-2xl font-black text-center uppercase mb-6 tracking-wider">
+                    Avaliar revendedora
+                </h2>
+                <form method="POST" action="{{ route('reseller-ratings.store') }}" class="space-y-6">
+                    @csrf
+
+                    <input type="hidden" name="reseller_id" :value="selectedResellerId">
+
+                    <div class="mb-4">
+                        <div class="relative w-max mx-auto">
+                            <img :src="`/images/${selectedRating}-star.svg`" alt="Avaliação"
+                                class="w-60 h-12 transition-all duration-300 ease-in-out">
+                            <div class="absolute top-0 left-0 w-full h-full flex">
+                                <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
+                                    <button type="button" @click="selectedRating = star"
+                                        class="w-1/5 h-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#840032]"
+                                        :title="`${star} estrela(s)`">
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="rating" :value="selectedRating">
+
+                    <div x-show="selectedRating > 0" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95"
+                        x-transition:enter-end="opacity-100 transform scale-100"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 transform scale-100"
+                        x-transition:leave-end="opacity-0 transform scale-95" class="mb-6 mt-4">
 
 
-    <section class="py-16">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <template x-for="comment in allComments.filter(c => c.rate == selectedRating)"
+                                :key="comment.id">
+                                <label :for="'comment_' + comment.id"
+                                    :class="{
+                                        'bg-[#840032] text-white': selectedComments.some(id => id == comment.id),
+                                        'bg-gray-200 text-gray-800 hover:bg-gray-300': !selectedComments.some(id =>
+                                            id == comment.id)
+                                    }"
+                                    class="px-4 py-2 rounded-full cursor-pointer transition-colors duration-200 ease-in-out text-sm font-semibold">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                @foreach ($otherResellers as $reseller)
-                    <x-reseller-card :reseller="$reseller"/>
-                @endforeach
+                                    <input type="checkbox" :id="'comment_' + comment.id" :value="comment.id"
+                                        name="comment_ids[]" x-model="selectedComments" class="hidden">
+
+                                    <span x-text="comment.comment"></span>
+                                </label>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <button type="submit"
+                            class="bg-[#840032] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
+                            Enviar Avaliação
+                        </button>
+                    </div>
+
+                </form>
             </div>
         </div>
-    </section>
-
+    </div>
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
