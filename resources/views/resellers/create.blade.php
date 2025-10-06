@@ -2,6 +2,7 @@
     <x-slot:title>
         Cadastro
     </x-slot:title>
+    <x-navigation-bar></x-navigation-bar>
 
     <div class="container mx-auto px-4 py-8 sm:py-12">
         <div class="flex flex-col lg:flex-row items-center justify-center lg:space-x-16">

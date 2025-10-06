@@ -3,7 +3,9 @@
         Perfil de {{ auth()->user()->name }}
     </x-slot:title>
 
+        <x-navigation-bar></x-navigation-bar>
     <div x-data="{ modalOpen: false }" @keydown.escape.window="modalOpen = false" class="container mx-auto px-4 py-8">
+
 
         <div class="text-center mb-8">
             <h1 class="text-3xl font-black text-gray-800 uppercase tracking-widest">Dados da conta</h1>

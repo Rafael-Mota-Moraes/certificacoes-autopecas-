@@ -2,6 +2,7 @@
     <x-slot:title>
         Minhas Revendedoras
     </x-slot:title>
+    <x-navigation-bar></x-navigation-bar>
 
     <div class="font-sans p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-145px)]">
         <div class="container mx-auto">

@@ -1,4 +1,4 @@
-<header x-data="{ open: false, dropdownOpen: false }" class="bg-white shadow-sm relative z-10">
+<header x-data="{ open: false, dropdownOpen: false }" class="bg-white border-1 border-b-gray-100 relative z-10">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 ">
         <div class="flex justify-between items-center py-4">
             <a href="{{ route('home') }}" class="flex items-center transition-discrete" x-show="!open" x-transition>
