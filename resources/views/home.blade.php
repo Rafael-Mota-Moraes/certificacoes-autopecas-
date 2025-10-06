@@ -71,7 +71,7 @@
 
             <div id="error" class="text-red-500 mb-6"></div>
 
-            <div id="map" class="h-96 w-full max-w-4xl mx-auto rounded-lg shadow-lg z-10"></div>
+            <div id="map" class="h-96 w-full max-w-4xl mx-auto rounded-lg shadow-lg z-1"></div>
 
         </div>
 
@@ -124,10 +124,7 @@
                 <h2 class="text-2xl font-black text-center uppercase mb-6 tracking-wider">
                     Avaliar revendedora
                 </h2>
-                <div class="text-center text-xs mb-4">
-                    <strong>Debug:</strong> <span x-text="JSON.stringify(selectedComments.includes(15))"></span>
-                </div>
-                <form method="POST">
+                <form method="POST" action="{{ route('reseller-ratings.store') }}" class="space-y-6">
                     @csrf
 
                     <input type="hidden" name="reseller_id" :value="selectedResellerId">
@@ -160,7 +157,7 @@
                         <div class="flex flex-wrap gap-2 justify-center">
                             <template x-for="comment in allComments.filter(c => c.rate == selectedRating)"
                                 :key="comment.id">
-                                <label :for="'comment_' + comment.id" {{-- AQUI ESTÁ A CORREÇÃO --}}
+                                <label :for="'comment_' + comment.id"
                                     :class="{
                                         'bg-[#840032] text-white': selectedComments.some(id => id == comment.id),
                                         'bg-gray-200 text-gray-800 hover:bg-gray-300': !selectedComments.some(id =>
@@ -177,10 +174,13 @@
                         </div>
                     </div>
 
-                    <button type="submit"
-                        class="w-full bg-[#840032] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
-                        Enviar Avaliação
-                    </button>
+                    <div class="flex justify-center">
+                        <button type="submit"
+                            class="bg-[#840032] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
+                            Enviar Avaliação
+                        </button>
+                    </div>
+
                 </form>
             </div>
         </div>
