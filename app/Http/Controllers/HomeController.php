@@ -26,7 +26,7 @@ class HomeController extends Controller
             ->withAvg('reviews', 'rating')
             ->orderByDesc('reviews_avg_rating')
             ->offset(5)
-            ->get();
+            ->paginate(16);
 
         $comments = Comment::all();
 

@@ -110,6 +110,10 @@
                         <x-reseller-card :reseller="$reseller" />
                     @endforeach
                 </div>
+
+                <div class="mt-12 flex justify-center">
+                    {{ $otherResellers->links() }}
+                </div>
             </div>
         </section>
 
