@@ -15,7 +15,7 @@ class UserController extends Controller
     public function create(Request $request): RedirectResponse
     {
         $validatedData = Validator::make($request->all(), [
-            "name" => "required|string|max:255",
+            "name" => ["required", "string", "max:255", "regex:/^[\p{L}\s'-]+$/u"],
             "email" => "required|string|email|max:255|unique:users",
             "cpf" => [
                 "required",
@@ -86,9 +86,9 @@ class UserController extends Controller
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            "name" => "required",
+            "name" => ["required", "string", "max:255", "regex:/^[\p{L}\s'-]+$/u"],
             "email" => "required|email|unique:users,email," . $user->id,
-            "password" => "nullable|min:6",
+            "password" => "nullable|min:6|confirmed",
         ]);
 
         $updateData = [
