@@ -1,25 +1,10 @@
 #!/bin/sh
-
-# Para o script se algo der errado
 set -e
 
-# Garante que estamos no diretório correto da aplicação
 cd /var/www/html
 
-# --- INSTALAÇÃO DE DEPENDÊNCIAS (APENAS SE NECESSÁRIO) ---
-if [ ! -f "vendor/autoload.php" ]; then
-    echo "Pasta vendor não encontrada. Rodando composer install..."
-    composer install --no-interaction --no-progress --prefer-dist
-else
-    echo "Pasta vendor encontrada. Pulando composer install."
-fi
-
-echo "Garantindo que os diretórios de storage existem..."
-mkdir -p storage/framework/sessions
-mkdir -p storage/framework/views
-mkdir -p storage/framework/cache/data
-
 echo "Ajustando permissões de diretório..."
+chown -R sail:sail storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 
 echo "Verificando a APP_KEY..."
@@ -30,8 +15,23 @@ else
     echo "APP_KEY já está definida."
 fi
 
-echo "Rodando as migrations do banco de dados..."
 php artisan migrate --force
+
+php artisan db:seed --force
+
+if [ ! -L "public/storage" ]; then
+    echo "Criando o link do storage..."
+    php artisan storage:link
+else
+    echo "O link do storage já existe."
+fi
+
+if [ "$APP_ENV" = "production" ]; then
+    echo "Otimizando a aplicação para produção..."
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+fi
 
 echo "Iniciando o servidor PHP-FPM..."
 exec "$@"
