@@ -12,7 +12,7 @@
 
         <a href="{{ route('resellers.create') }}"
            class="py-3 px-6 font-semibold transition-colors text-[#840032]
-                          {{ request()->routeIs('reseller.create')
+                          {{ request()->routeIs('resellers.create')
                              ? 'bg-gray-300 '
                              : 'bg-transparent  hover:bg-gray-50 ' }}">
             Cadastrar revendedora
@@ -20,7 +20,7 @@
 
         <a href="{{ route('resellers.index') }}"
            class="py-3 px-6 font-semibold transition-colors text-[#840032]
-                          {{ request()->routeIs('reseller.index')
+                          {{ request()->routeIs('resellers.index')
                              ? 'bg-gray-300 '
                              : 'bg-transparent  hover:bg-gray-50 ' }}">
             Minhas revendedoras

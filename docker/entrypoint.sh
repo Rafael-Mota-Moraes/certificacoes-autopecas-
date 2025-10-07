@@ -15,15 +15,9 @@ else
     echo "APP_KEY já está definida."
 fi
 
-echo "Rodando as migrations do banco de dados..."
 php artisan migrate --force
 
-if [ "$RUN_SEEDERS" = "true" ]; then
-    echo "Rodando os seeders..."
-    php artisan db:seed --force
-else
-    echo "Pulando os seeders."
-fi
+php artisan db:seed --force
 
 if [ ! -L "public/storage" ]; then
     echo "Criando o link do storage..."
