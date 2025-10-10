@@ -12,7 +12,7 @@ class UserReportController extends Controller
      */
     public function index()
     {
-        return redirect("user_report.report");
+        return view("user_report.report");
     }
 
     /**
