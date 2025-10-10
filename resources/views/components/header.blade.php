@@ -44,6 +44,9 @@
                                 <a href="{{route("resellers.index")}}"
                                    class="block px-4 py-2 text-sm text-center font-medium text-[#840032] hover:bg-gray-100">Minhas
                                     revendedoras</a>
+                                <a href="{{route("user_report.index")}}"
+                                   class="block px-4 py-2 text-sm text-center font-medium text-[#840032] hover:bg-gray-100">Reportar erro</a>
+
 
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
