@@ -1,6 +1,7 @@
 <x-layout>
 
     <style>
+
         @media (max-width: 767px) {
 
             .swiper-button-prev,
@@ -48,8 +49,10 @@
         Página Inicial
     </x-slot:title>
     <div x-data="{
-        modalOpen: false,
+        ratedModalOpen: false,
+        detailModalOpen: false,
         selectedResellerId: null,
+        selectedReseller: null,
         selectedRating: 0,
         selectedComments: [],
         allComments: {{ $comments->isNotEmpty() ? $comments->toJson() : '[]' }}
@@ -86,7 +89,7 @@
                     <div class="swiper top-rated-swiper">
                         <div class="swiper-wrapper">
                             @foreach ($topRatedResellers as $reseller)
-                                <div class="swiper-slide">
+                                <div class="swiper-slide ml-5">
                                     <x-reseller-card :reseller="$reseller" />
                                 </div>
                             @endforeach
@@ -105,9 +108,9 @@
             <div class="container mx-auto px-4">
                 <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-8">
                     @foreach ($otherResellers as $reseller)
-                        <x-reseller-card :reseller="$reseller" />
+                        <x-reseller-card :reseller="$reseller"/>
                     @endforeach
                 </div>
 
@@ -117,13 +120,13 @@
             </div>
         </section>
 
-        <div x-show="modalOpen" x-transition:enter="transition ease-out duration-300"
+        <div x-show="ratedModalOpen" x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center "
             style="display: none; background-color: rgba(0, 0, 0, 0.5);">
 
-            <div @click.outside="modalOpen = false"
+            <div @click.outside="ratedModalOpen = false"
                 class="bg-white rounded-2xl border-2 border-[#840032] shadow-xl p-8 max-w-xl w-full mx-4">
                 <h2 class="text-2xl font-black text-center uppercase mb-6 tracking-wider">
                     Avaliar revendedora
@@ -186,6 +189,50 @@
                     </div>
 
                 </form>
+            </div>
+        </div>
+
+        <div
+            x-show="detailModalOpen" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+            style="display: none;"
+        >
+            <div
+                @click.away="detailModalOpen = false"
+                class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 p-6 relative"
+            >
+                <template x-if="selectedReseller">
+                    <div>
+                        <img class="absolute top-0 -left-2 z-10 w-30 h-30" src="images/mini_certificate.svg" alt="Certificado">
+                        <div class="flex flex-col md:flex-row gap-6 mt-8">
+                            <div class="w-full md:w-1/2">
+                                <img class="w-full h-64 object-cover rounded-md" :src="selectedReseller.image_url || 'images/car-placeholder.png'" alt="Foto">
+                            </div>
+                            <div class="w-full md:w-1/2 flex flex-col">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h2 class="text-3xl font-bold" x-text="selectedReseller.name"></h2>
+                                    <div class="flex items-center">
+                                            <span class="text-lg font-bold ml-auto mx-2" x-text="parseFloat(selectedReseller.reviews_avg_rating).toFixed(1).replace('.', ',')"></span>
+                                            <img :src="'images/' + Math.ceil(selectedReseller.reviews_avg_rating) + '-star.svg'" alt="Avaliação">
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 mb-4" x-text="'CNPJ: ' + (selectedReseller.cnpj || 'Não informado')"></p>
+                                <div class="text-sm text-gray-700 space-y-2">
+                                    <p><strong>Endereço:</strong> <span x-text="selectedReseller.address ? `${selectedReseller.address.street} - ${selectedReseller.address.city} - ${selectedReseller.address.state}` : 'Não cadastrado'"></span></p>
+                                    <p><strong>Contatos:</strong></p>
+                                    <p class="pl-4">Tel: <span x-text="selectedReseller.phone || '(DDD) 99999-9999'"></span></p>
+                                    <p class="pl-4">E-mail: <span x-text="selectedReseller.email || 'email@example.com'"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
