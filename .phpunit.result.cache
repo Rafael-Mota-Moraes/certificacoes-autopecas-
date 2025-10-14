@@ -1,0 +1,1 @@
+{"version":2,"defects":{"Tests\\Unit\\Services\\AbacatePayServiceTest::test_create_pix_charge_returns_data_successfully":8},"times":{"Tests\\Unit\\Services\\AbacatePayServiceTest::test_create_pix_charge_returns_data_successfully":0.012}}
