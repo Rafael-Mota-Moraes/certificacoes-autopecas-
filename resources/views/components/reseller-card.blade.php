@@ -1,7 +1,9 @@
 @props(['reseller'])
 <div class="bg-white shadow-lg overflow-hidden flex flex-col flex-shrink-0 w-80 relative">
     <div class="p-4 flex flex-col flex-grow ">
-        <img class="absolute top-0 -left-2 z-10 w-30 h-30" src="images/mini_certificate.svg" alt="Certificado">
+        @if ($reseller->certificate)
+            <img class="absolute top-0 -left-2 z-10 w-30 h-30" src="images/mini_certificate.svg" alt="Certificado">
+        @endif
 
         <div class="flex items-end justify-between mb-2">
             <span
@@ -29,10 +31,9 @@
                 class="mt-auto block w-25 bg-[#840032] text-white text-center font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
                 Avaliar
             </button>
-            <button
-                @click="selectedReseller = {{ Js::from($reseller) }}; detailModalOpen = true"
-                class="block w-25 mx-2 text-center font-semibold py-2 px-4 rounded-md transition-colors border-1"
-                style="color: #840032;" >
+            <button @click="selectedReseller = {{ Js::from($reseller) }}; detailModalOpen = true"
+                class="block w-25 mx-2 text-center font-semibold py-2 px-4 rounded-md transition-colors border-1"
+                style="color: #840032;">
                 Ver mais
             </button>
         </div>
