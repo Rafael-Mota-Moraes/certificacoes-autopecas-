@@ -48,8 +48,10 @@
         Página Inicial
     </x-slot:title>
     <div x-data="{
-        modalOpen: false,
+        ratedModalOpen: false,
+        detailModalOpen: false,
         selectedResellerId: null,
+        selectedReseller: null,
         selectedRating: 0,
         selectedComments: [],
         allComments: {{ $comments->isNotEmpty() ? $comments->toJson() : '[]' }}
@@ -86,7 +88,7 @@
                     <div class="swiper top-rated-swiper">
                         <div class="swiper-wrapper">
                             @foreach ($topRatedResellers as $reseller)
-                                <div class="swiper-slide">
+                                <div class="swiper-slide ml-5">
                                     <x-reseller-card :reseller="$reseller" />
                                 </div>
                             @endforeach
@@ -105,7 +107,7 @@
             <div class="container mx-auto px-4">
                 <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-8">
                     @foreach ($otherResellers as $reseller)
                         <x-reseller-card :reseller="$reseller" />
                     @endforeach
@@ -117,13 +119,13 @@
             </div>
         </section>
 
-        <div x-show="modalOpen" x-transition:enter="transition ease-out duration-300"
+        <div x-show="ratedModalOpen" x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center "
             style="display: none; background-color: rgba(0, 0, 0, 0.5);">
 
-            <div @click.outside="modalOpen = false"
+            <div @click.outside="ratedModalOpen = false"
                 class="bg-white rounded-2xl border-2 border-[#840032] shadow-xl p-8 max-w-xl w-full mx-4">
                 <h2 class="text-2xl font-black text-center uppercase mb-6 tracking-wider">
                     Avaliar revendedora
@@ -161,8 +163,7 @@
                         <div class="flex flex-wrap gap-2 justify-center">
                             <template x-for="comment in allComments.filter(c => c.rate == selectedRating)"
                                 :key="comment.id">
-                                <label :for="'comment_' + comment.id"
-                                    :class="{
+                                <label :for="'comment_' + comment.id" :class="{
                                         'bg-[#840032] text-white': selectedComments.some(id => id == comment.id),
                                         'bg-gray-200 text-gray-800 hover:bg-gray-300': !selectedComments.some(id =>
                                             id == comment.id)
@@ -186,6 +187,60 @@
                     </div>
 
                 </form>
+            </div>
+        </div>
+
+        <div x-show="detailModalOpen" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] bg-opacity-50"
+            style="display: none;">
+            @props(['reseller'])
+            <div @click.away="detailModalOpen = false"
+                class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 p-6 relative">
+                <template x-if="selectedReseller">
+                    <div class="">
+                        <template x-if="selectedReseller.has_certificate">
+                            <img x-if="selectedReseller.certificate" class="absolute top-0 -left-2 z-10 w-30 h-30"
+                                src="images/mini_certificate.svg" alt="Certificado">
+                        </template>
+
+                        <div class="flex md:flex-row gap-6 mt-8">
+                            <div class="w-full align-center">
+                                <img class="w-full h-75 object-cover rounded-md"
+                                    :src="selectedReseller.image_url || 'images/car-placeholder.png'" alt="Foto">
+                                <div
+                                    class="flex pl-2 items-center border-b-1 border-color-black border-solid justify-between mb-2">
+                                    <div>
+                                        <h2 class="text-3xl font-bold" x-text="selectedReseller.name"></h2>
+                                        <p class="text-gray-600 mb-4"
+                                            x-text="'CNPJ: ' + (selectedReseller.cnpj || 'Não informado')"></p>
+                                    </div>
+                                    <div class="flex text-3xl items-center">
+                                        <span class="text-3xl font-bold"
+                                            x-text="parseFloat(selectedReseller.reviews_avg_rating).toFixed(1).replace('.', ',')"></span>
+                                        <img :src="'images/' + Math.ceil(selectedReseller.reviews_avg_rating) + '-star.svg'"
+                                            alt="Avaliação">
+                                    </div>
+                                </div>
+                                <div class="flex justify-between text-sm text-gray-700 space-y-2">
+                                    <div>
+                                        <p><strong>Endereço:</strong></p>
+                                        <span
+                                            x-text="selectedReseller.address ? `${selectedReseller.address.street} - ${selectedReseller.address.city} - ${selectedReseller.address.state}` : 'Não cadastrado'"></span>
+                                    </div>
+                                    <div>
+                                        <p><strong>Contatos:</strong></p>
+                                        <p>Tel: <span x-text="selectedReseller.phone || '(DDD) 99999-9999'"></span></p>
+                                        <p>E-mail: <span x-text="selectedReseller.email || 'email@example.com'"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </div>

@@ -26,6 +26,8 @@ class ResellerController extends Controller
         return view("resellers.index", compact("resellers"));
     }
 
+    
+
     /**
      * Show the form for creating a new resource.
      */
