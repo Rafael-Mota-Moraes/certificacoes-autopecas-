@@ -15,23 +15,27 @@ class HomeController extends Controller
             ->whereHas('address', function ($query) {
                 $query->whereNotNull('latitude')->whereNotNull('longitude');
             })->get();
-        
-        $topRatedReseller = Reseller::with('reviews')
+
+        $topRatedResellers = Reseller::with('reviews')
             ->withAvg('reviews', 'rating')
+            ->whereHas('certificate') 
+            ->where('active', true)
             ->orderByDesc('reviews_avg_rating')
-            ->take(5)
+            ->take(20)
             ->get();
+
+        $topRatedResellerIds = $topRatedResellers->pluck('id');
 
         $otherResellers = Reseller::with('reviews')
             ->withAvg('reviews', 'rating')
-            ->orderByDesc('reviews_avg_rating')
-            ->offset(5)
+            ->whereNotIn('id', $topRatedResellerIds) 
+            ->orderByDesc('reviews_avg_rating') 
             ->paginate(16);
 
         $comments = Comment::all();
 
         return view('home', [
-            'topRatedResellers' => $topRatedReseller,
+            'topRatedResellers' => $topRatedResellers,
             'otherResellers' => $otherResellers,
             'resellersForMap' => $resellersForMap,
             'comments' => $comments
