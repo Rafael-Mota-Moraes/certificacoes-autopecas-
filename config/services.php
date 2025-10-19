@@ -34,9 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    'abacate_pay' => [
-        'url' => env('ABACATEPAY_URL'),
+    'abacatepay' => [
+        'url' => env('ABACATE_PAY_URL'),
         'key' => env('ABACATE_PAY_API_KEY'),
+        'webhook_token' => env('ABACATE_PAY_WEBHOOK_TOKEN'),
     ]
 
 ];

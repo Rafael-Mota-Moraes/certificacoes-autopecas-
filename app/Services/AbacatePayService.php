@@ -11,9 +11,8 @@ class AbacatePayService
 
     public function __construct()
     {
-        $apiUrl = config('services.abacatepay.url');
+        $apiUrl = rtrim(config('services.abacatepay.url'), '/');
         $apiKey = config('services.abacatepay.key');
-
         if (!$apiUrl || !$apiKey) {
             throw new \InvalidArgumentException('A URL e a Chave da API do Abacate Pay devem ser configuradas.');
         }
@@ -23,7 +22,6 @@ class AbacatePayService
             ->acceptJson()
             ->throw();
     }
-
 
     public function createPixCharge(float $amount, array $metadata = []): array
     {
