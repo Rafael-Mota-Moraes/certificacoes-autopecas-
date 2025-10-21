@@ -309,10 +309,16 @@
             }).addTo(map);
 
             const resellers = @json($resellersForMap);
+            const customMarkerIcon = L.icon({
+                iconUrl: '/images/marker.png', // <-- Caminho para sua imagem
+                iconSize: [50, 60], // Tamanho do ícone [largura, altura]
+                iconAnchor: [12, 41], // Ponto do ícone que corresponde à localização (ponta de baixo)
+                popupAnchor: [1, -34] // Ponto onde o popup deve aparecer relativo ao ícone
+            });
 
             resellers.forEach(reseller => {
                 if (reseller.address && reseller.address.latitude && reseller.address.longitude) {
-                    const marker = L.marker([reseller.address.latitude, reseller.address.longitude]).addTo(map);
+                    const marker = L.marker([reseller.address.latitude, reseller.address.longitude],{ icon: customMarkerIcon }).addTo(map);
                     const popupContent = `
                                     <div class="popup-header">
                                         <div class="popup-title">${reseller.name}</div>
