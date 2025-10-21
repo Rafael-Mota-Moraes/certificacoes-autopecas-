@@ -1,41 +1,40 @@
 @props(['reseller'])
-<div class="bg-white shadow-lg overflow-hidden flex flex-col flex-shrink-0 w-80 relative">
-    <div class="p-4 flex flex-col flex-grow ">
-        @if ($reseller->certificate)
-            <img class="absolute top-0 -left-2 z-10 w-30 h-30" src="images/mini_certificate.svg" alt="Certificado">
-        @endif
 
-        <div class="flex items-end justify-between mb-2">
-            <span
-                class="text-lg font-bold ml-auto mx-2">{{ number_format($reseller->reviews_avg_rating, 1, ',', '') }}</span>
-            <img src="images/{{ ceil($reseller->reviews_avg_rating) }}-star.svg" alt="">
+@php
+    $hasActiveCertificate = $reseller->certificate && $reseller->certificate->status == 'paid';
+@endphp
+
+<div class="relative bg-white rounded-lg shadow-lg p-5 flex flex-col h-full">
+
+    @if($hasActiveCertificate)
+        <div class="absolute -top-1 -left-1 z-10" title="Revendedora Certificada">
+            <img src="{{ asset('images/mini_certificate.svg') }}" class="w-30 h-30 " alt="Selo de Certificado">
         </div>
+    @endif
 
-        <img class="w-full h-40 object-cover" src="{{ $reseller->image_url ?? 'images/car-placeholder.png' }}"
-            alt="Foto da {{ $reseller->name }}">
 
-        <p class="my-2 font-bold text-xl">
-            {{ $reseller->name }}
-        </p>
+    <div class="w-full h-48 mb-4">
+        <img class="w-full h-full object-cover rounded-md"
+             src="{{ $reseller->image_url ?? asset('images/car-placeholder.png') }}" alt="Foto">
+    </div>
 
-        <p class="mb-4">
-            @if ($reseller->address)
-                {{ $reseller->address->street }} - {{ $reseller->address->city }} - {{ $reseller->address->state }}
-            @else
-                Endereço não cadastrado.
-            @endif
-        </p>
+    <h3 class="text-xl font-bold truncate">{{ $reseller->name }}</h3>
+    <p class="text-sm text-gray-500 mb-2">CNPJ: {{ $reseller->cnpj ?? 'N/A' }}</p>
 
-        <div class="flex justify-center items-center">
-            <button @click="ratedModalOpen = true; selectedResellerId = {{ $reseller->id }}"
-                class="mt-auto block w-25 bg-[#840032] text-white text-center font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
-                Avaliar
-            </button>
-            <button @click="selectedReseller = {{ Js::from($reseller) }}; detailModalOpen = true"
-                class="block w-25 mx-2 text-center font-semibold py-2 px-4 rounded-md transition-colors border-1"
-                style="color: #840032;">
-                Ver mais
-            </button>
-        </div>
+    <span class="text-sm text-gray-700">
+        {{ $reseller->address ? $reseller->address->city : 'Local não informado' }}
+    </span>
+
+    <div class="mt-auto pt-4 flex gap-2">
+        <button
+                @click="detailModalOpen = true; selectedReseller = {{ $reseller->toJson() }}"
+                class="w-full text-center bg-[#840032] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
+            Ver Detalhes
+        </button>
+        <button
+                @click="ratedModalOpen = true; selectedResellerId = {{ $reseller->id }}"
+                class="w-full text-center bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 transition-colors">
+            Avaliar
+        </button>
     </div>
 </div>

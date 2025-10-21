@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reseller;
 use App\Models\Comment;
+use App\Models\Reseller;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -22,15 +22,16 @@ class HomeController extends Controller
                 $query->where('status', 'paid');
             })
             ->orderByDesc('reviews_avg_rating')
-            ->take(20)
+            ->take(8)
             ->get();
+
 
         $topRatedResellerIds = $topRatedResellers->pluck('id');
 
         $otherResellers = Reseller::with('reviews')
             ->withAvg('reviews', 'rating')
-            ->whereNotIn('id', $topRatedResellerIds) 
-            ->orderByDesc('reviews_avg_rating') 
+            ->whereNotIn('id', $topRatedResellerIds)
+            ->orderByDesc('reviews_avg_rating')
             ->paginate(16);
 
         $comments = Comment::all();

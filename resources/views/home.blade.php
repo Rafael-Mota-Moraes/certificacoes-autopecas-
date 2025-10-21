@@ -62,12 +62,12 @@
                 <button id="search-button" class="px-4 text-gray-500 hover:text-[#840032]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                            clip-rule="evenodd" />
+                              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                              clip-rule="evenodd"/>
                     </svg>
                 </button>
                 <input type="text" id="search-input" placeholder="Digite sua Cidade"
-                    class="w-full py-2 bg-transparent focus:outline-none">
+                       class="w-full py-2 bg-transparent focus:outline-none">
             </div>
             <h2 class="text-3xl font-extrabold text-gray-800 uppercase mb-4">Encontre a revendedora mais próxima</h2>
 
@@ -77,39 +77,42 @@
 
         </div>
 
-        <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">Revendedoras
-            mais
-            avaliadas</h2>
+        @if ($topRatedResellers->isNotEmpty())
 
-        <div class="relative">
-            <section class="bg-[#840032] py-12">
-                <div class="container mx-auto px-4">
+            <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">
+                Revendedoras
+                certificadas </h2>
 
-                    <div class="swiper top-rated-swiper">
-                        <div class="swiper-wrapper">
-                            @foreach ($topRatedResellers as $reseller)
-                                <div class="swiper-slide ml-5">
-                                    <x-reseller-card :reseller="$reseller" />
-                                </div>
-                            @endforeach
+            <div class="relative">
+                <section class="bg-[#840032] py-12">
+                    <div class="container mx-auto px-4">
+
+                        <div class="swiper top-rated-swiper">
+                            <div class="swiper-wrapper">
+                                @foreach ($topRatedResellers as $reseller)
+                                    <div class="swiper-slide ml-5">
+                                        <x-reseller-card :reseller="$reseller"/>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
+                        <div class="swiper-button-prev hidden lg:block"></div>
+                        <div class="swiper-button-next hidden lg:block"></div>
                     </div>
-                    <div class="swiper-button-prev hidden lg:block"></div>
-                    <div class="swiper-button-next hidden lg:block"></div>
-                </div>
-            </section>
+                </section>
 
-            <div class="swiper-pagination top-rated-swiper-pagination"></div>
-        </div>
+                <div class="swiper-pagination top-rated-swiper-pagination"></div>
+            </div>
 
+        @endif
 
         <section class="py-16">
             <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
+                <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Revendedoras</h2>
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-8">
                     @foreach ($otherResellers as $reseller)
-                        <x-reseller-card :reseller="$reseller" />
+                        <x-reseller-card :reseller="$reseller"/>
                     @endforeach
                 </div>
 
@@ -120,13 +123,13 @@
         </section>
 
         <div x-show="ratedModalOpen" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center "
-            style="display: none; background-color: rgba(0, 0, 0, 0.5);">
+             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center "
+             style="display: none; background-color: rgba(0, 0, 0, 0.5);">
 
             <div @click.outside="ratedModalOpen = false"
-                class="bg-white rounded-2xl border-2 border-[#840032] shadow-xl p-8 max-w-xl w-full mx-4">
+                 class="bg-white rounded-2xl border-2 border-[#840032] shadow-xl p-8 max-w-xl w-full mx-4">
                 <h2 class="text-2xl font-black text-center uppercase mb-6 tracking-wider">
                     Avaliar revendedora
                 </h2>
@@ -138,12 +141,12 @@
                     <div class="mb-4">
                         <div class="relative w-max mx-auto">
                             <img :src="`/images/${selectedRating}-star.svg`" alt="Avaliação"
-                                class="w-60 h-12 transition-all duration-300 ease-in-out">
+                                 class="w-60 h-12 transition-all duration-300 ease-in-out">
                             <div class="absolute top-0 left-0 w-full h-full flex">
                                 <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
                                     <button type="button" @click="selectedRating = star"
-                                        class="w-1/5 h-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#840032]"
-                                        :title="`${star} estrela(s)`">
+                                            class="w-1/5 h-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#840032]"
+                                            :title="`${star} estrela(s)`">
                                     </button>
                                 </template>
                             </div>
@@ -153,25 +156,25 @@
                     <input type="hidden" name="rating" :value="selectedRating">
 
                     <div x-show="selectedRating > 0" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform scale-95"
-                        x-transition:enter-end="opacity-100 transform scale-100"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 transform scale-100"
-                        x-transition:leave-end="opacity-0 transform scale-95" class="mb-6 mt-4">
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95" class="mb-6 mt-4">
 
 
                         <div class="flex flex-wrap gap-2 justify-center">
                             <template x-for="comment in allComments.filter(c => c.rate == selectedRating)"
-                                :key="comment.id">
+                                      :key="comment.id">
                                 <label :for="'comment_' + comment.id" :class="{
                                         'bg-[#840032] text-white': selectedComments.some(id => id == comment.id),
                                         'bg-gray-200 text-gray-800 hover:bg-gray-300': !selectedComments.some(id =>
                                             id == comment.id)
                                     }"
-                                    class="px-4 py-2 rounded-full cursor-pointer transition-colors duration-200 ease-in-out text-sm font-semibold">
+                                       class="px-4 py-2 rounded-full cursor-pointer transition-colors duration-200 ease-in-out text-sm font-semibold">
 
                                     <input type="checkbox" :id="'comment_' + comment.id" :value="comment.id"
-                                        name="comment_ids[]" x-model="selectedComments" class="hidden">
+                                           name="comment_ids[]" x-model="selectedComments" class="hidden">
 
                                     <span x-text="comment.comment"></span>
                                 </label>
@@ -181,7 +184,7 @@
 
                     <div class="flex justify-center">
                         <button type="submit"
-                            class="bg-[#840032] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
+                                class="bg-[#840032] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#6a0028] transition-colors">
                             Enviar Avaliação
                         </button>
                     </div>
@@ -191,44 +194,44 @@
         </div>
 
         <div x-show="detailModalOpen" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] bg-opacity-50"
-            style="display: none;">
+             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] bg-opacity-50"
+             style="display: none;">
             @props(['reseller'])
             <div @click.away="detailModalOpen = false"
-                class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 p-6 relative">
+                 class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 p-6 relative">
                 <template x-if="selectedReseller">
                     <div class="">
                         <template x-if="selectedReseller.has_certificate">
                             <img x-if="selectedReseller.certificate" class="absolute top-0 -left-2 z-10 w-30 h-30"
-                                src="images/mini_certificate.svg" alt="Certificado">
+                                 src="images/mini_certificate.svg" alt="Certificado">
                         </template>
 
                         <div class="flex md:flex-row gap-6 mt-8">
                             <div class="w-full align-center">
                                 <img class="w-full h-75 object-cover rounded-md"
-                                    :src="selectedReseller.image_url || 'images/car-placeholder.png'" alt="Foto">
+                                     :src="selectedReseller.image_url || 'images/car-placeholder.png'" alt="Foto">
                                 <div
-                                    class="flex pl-2 items-center border-b-1 border-color-black border-solid justify-between mb-2">
+                                        class="flex pl-2 items-center border-b-1 border-color-black border-solid justify-between mb-2">
                                     <div>
                                         <h2 class="text-3xl font-bold" x-text="selectedReseller.name"></h2>
                                         <p class="text-gray-600 mb-4"
-                                            x-text="'CNPJ: ' + (selectedReseller.cnpj || 'Não informado')"></p>
+                                           x-text="'CNPJ: ' + (selectedReseller.cnpj || 'Não informado')"></p>
                                     </div>
                                     <div class="flex text-3xl items-center">
                                         <span class="text-3xl font-bold"
-                                            x-text="parseFloat(selectedReseller.reviews_avg_rating).toFixed(1).replace('.', ',')"></span>
+                                              x-text="parseFloat(selectedReseller.reviews_avg_rating).toFixed(1).replace('.', ',')"></span>
                                         <img :src="'images/' + Math.ceil(selectedReseller.reviews_avg_rating) + '-star.svg'"
-                                            alt="Avaliação">
+                                             alt="Avaliação">
                                     </div>
                                 </div>
                                 <div class="flex justify-between text-sm text-gray-700 space-y-2">
                                     <div>
                                         <p><strong>Endereço:</strong></p>
                                         <span
-                                            x-text="selectedReseller.address ? `${selectedReseller.address.street} - ${selectedReseller.address.city} - ${selectedReseller.address.state}` : 'Não cadastrado'"></span>
+                                                x-text="selectedReseller.address ? `${selectedReseller.address.street} - ${selectedReseller.address.city} - ${selectedReseller.address.state}` : 'Não cadastrado'"></span>
                                     </div>
                                     <div>
                                         <p><strong>Contatos:</strong></p>
@@ -275,7 +278,6 @@
                     return;
                 }
 
-                // URL da API Nominatim
                 const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
 
                 fetch(apiUrl)
@@ -319,34 +321,36 @@
                 }
             });
 
-            const swiper = new Swiper('.top-rated-swiper', {
-                autoplay: true,
-                loop: true,
-                spaceBetween: 30,
-                slidesPerView: 1,
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
+            if (document.querySelector('.top-rated-swiper')) {
+                const swiper = new Swiper('.top-rated-swiper', {
+                    autoplay: true,
+                    loop: true,
+                    spaceBetween: 30,
+                    slidesPerView: 1,
+                    breakpoints: {
+                        640: {
+                            slidesPerView: 2,
+                            spaceBetween: 20,
+                        },
+                        768: {
+                            slidesPerView: 3,
+                            spaceBetween: 30,
+                        },
+                        1024: {
+                            slidesPerView: 4,
+                            spaceBetween: 40,
+                        },
                     },
-                    768: {
-                        slidesPerView: 3,
-                        spaceBetween: 30,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
                     },
-                    1024: {
-                        slidesPerView: 4,
-                        spaceBetween: 40,
+                    pagination: {
+                        el: '.top-rated-swiper-pagination',
+                        clickable: true,
                     },
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                pagination: {
-                    el: '.top-rated-swiper-pagination',
-                    clickable: true,
-                },
-            });
+                });
+            }
         </script>
     @endpush
 </x-layout>

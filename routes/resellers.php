@@ -19,4 +19,8 @@ Route::middleware("auth")->group(function () {
         ResellerController::class,
         "storeRating",
     ])->name("reseller-ratings.store");
+
+    Route::get('/reseller/{reseller}', [ResellerController::class, 'show'])->name('reseller.show');
 });
+
+

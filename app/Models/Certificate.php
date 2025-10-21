@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Certificate extends Model
 {
+
     protected $fillable = [
         "reseller_id",
         "status",
-        "payment_id",
-        "qr_code_data",
         "amount",
         "payment_expires_at",
+        "payment_provider_id",
+        "pix_qr_code",
+        "pix_emv",
     ];
 
 

@@ -14,22 +14,34 @@ class ReviewSeeder extends Seeder
     {
         $resellers = Reseller::all();
         $users = User::all();
-        $commentIds = Comment::pluck('id');
 
-        if ($resellers->isEmpty() || $users->isEmpty() || $commentIds->isEmpty()) {
+        $groupedComments = Comment::all()->groupBy('rate');
+
+        if ($resellers->isEmpty() || $users->isEmpty() || $groupedComments->isEmpty()) {
             $this->command->warn('Certifique-se de que existem revendedoras, usuários e comentários predefinidos antes de rodar este seeder.');
             return;
         }
 
-        $this->command->info('Criando reviews e associando comentários...');
+        $this->command->info('Criando reviews e associando comentários correspondentes à nota...');
 
-        $resellers->each(function (Reseller $reseller) use ($commentIds) {
+        $resellers->each(function (Reseller $reseller) use ($groupedComments) {
             Review::factory()
-                ->count(rand(2, 10))
+                ->count(rand(20, 150))
                 ->create(['reseller_id' => $reseller->id])
-                ->each(function (Review $review) use ($commentIds) {
-                    $commentsToAttach = $commentIds->random(rand(1, 3));
-                    $review->comments()->attach($commentsToAttach);
+                ->each(function (Review $review) use ($groupedComments) {
+
+                    $rating = $review->rating;
+
+                    if ($groupedComments->has($rating)) {
+
+                        $commentIdsForRating = $groupedComments->get($rating)->pluck('id');
+
+                        $maxComments = min($commentIdsForRating->count(), 3);
+                        if ($maxComments < 1) return;
+                        $commentsToAttach = $commentIdsForRating->random(rand(1, $maxComments));
+
+                        $review->comments()->attach($commentsToAttach);
+                    }
                 });
         });
     }

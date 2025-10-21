@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ChecksCertificateEligibility;
 use App\Models\Reseller;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
@@ -9,24 +10,98 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+// 1. Importar o Trait
+
 class ResellerController extends Controller
 {
+    use ChecksCertificateEligibility;
+
+    // 2. Usar o Trait
+
     /**
-     * Display a listing of the resource.
+     * Exibe a página de detalhes e avaliações da revendedora.
+     */
+    public function show(Request $request, Reseller $reseller)
+    {
+        $reseller->load('certificate');
+
+        // --- Query base e cálculos de média/total ---
+        $allReviewsQuery = $reseller->reviews();
+        $averageRating = $allReviewsQuery->avg('rating') ?? 0;
+
+        // Contagem para cada estrela
+        $ratingCounts = (clone $allReviewsQuery)
+            ->select('rating', DB::raw('count(*) as count'))
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->all();
+
+        $starCounts = [
+            '5' => $ratingCounts[5] ?? 0,
+            '4' => $ratingCounts[4] ?? 0,
+            '3' => $ratingCounts[3] ?? 0,
+            '2' => $ratingCounts[2] ?? 0,
+            '1' => $ratingCounts[1] ?? 0,
+        ];
+
+        // --- LÓGICA DE CRITÉRIOS (agora usa o Trait) ---
+        $eligibility = $this->checkEligibility($reseller);
+        // ----------------------------------------------
+
+        // --- Filtragem e Paginação ---
+        $reviewsQuery = $reseller->reviews()->with('user', 'comments');
+
+        $currentRating = $request->input('rating');
+        if ($currentRating && in_array($currentRating, [1, 2, 3, 4, 5])) {
+            $reviewsQuery->where('rating', $currentRating);
+        }
+
+        $reviews = $reviewsQuery->latest()->paginate(8);
+
+        // --- Envia tudo para a View ---
+        return view('resellers.show', [
+            'reseller' => $reseller,
+            'reviews' => $reviews,
+            'averageRating' => $averageRating,
+
+            // Variáveis vindas do Trait
+            'totalReviews' => $eligibility['totalReviews'],
+            'positivePercentage' => round($eligibility['positivePercentage'] * 100),
+
+            // Constantes do Trait
+            'criteriaReviews' => self::MINIMUM_REVIEWS_REQUIRED,
+            'criteriaPercentage' => self::REQUIRED_HIGH_RATING_PERCENTAGE * 100, // Envia 80
+
+            // Resultados Booleanos do Trait
+            'meetsReviews' => $eligibility['meetsReviews'],
+            'meetsPercentage' => $eligibility['meetsPercentage'],
+
+            // Outras vars
+            'starCounts' => $starCounts,
+            'currentRating' => $currentRating,
+        ]);
+    }
+
+    /**
+     * Exibe a lista de revendedoras do usuário (Minhas Revendedoras).
      */
     public function index()
     {
-        $userId = 1;
+        // 3. Ordenar pelo certificado
+        $resellers = Reseller::where("user_id", auth()->id())
+            ->with("address", "contacts", "certificate") // Carrega o certificado
+            // Cria uma coluna virtual 'has_active_certificate' (true/false)
+            ->withExists(['certificate as has_active_certificate' => function ($query) {
+                $query->where('status', 'pago');
+            }])
+            // Ordena por essa coluna, colocando os 'true' (certificados) primeiro
+            ->orderBy('has_active_certificate', 'desc')
+            ->orderBy('name', 'asc') // Ordena alfabeticamente como segundo critério
+            ->paginate(9); // Pagina os resultados
 
-        $resellers = Reseller::with("address")
-            ->with("contacts")
-            ->where("user_id", $userId)
-            ->get();
-        //
         return view("resellers.index", compact("resellers"));
     }
 
-    
 
     /**
      * Show the form for creating a new resource.
@@ -45,13 +120,11 @@ class ResellerController extends Controller
             "name" => "required|string|max:255",
             "cnpj" => "required|string|unique:resellers,cnpj",
             "photo" => "nullable|image|mimes:jpeg,png,jpg,gif|max:2048",
-
             "street" => "required|string|max:255",
             "number" => "required|string|max:255",
             "city" => "required|string|max:255",
             "state" => "required|string|max:255",
             "zip_code" => "required|string|max:20",
-
             "contacts" => "required|array|min:1",
             "contacts.*.phone" => "required|string|max:20",
             "contacts.*.email" => "required|email|unique:contacts,email",
@@ -66,7 +139,7 @@ class ResellerController extends Controller
             }
 
             $reseller = Reseller::create([
-                "user_id" => 1,
+                "user_id" => auth()->id(), // 4. Corrigido
                 "name" => $validated["name"],
                 "cnpj" => $validated["cnpj"],
                 "photo" => $photoPath,
@@ -83,22 +156,18 @@ class ResellerController extends Controller
                         "zip_code",
                     ]),
                 );
-            $reseller->contacts()->create($request->only(["phone", "email"]));
+
+            // 5. Corrigido para salvar múltiplos contatos
+            foreach ($validated["contacts"] as $contactData) {
+                $reseller->contacts()->create($contactData);
+            }
         });
 
         return redirect()
             ->route("resellers.index")
-            ->with("success", "Reseller created successfully!");
+            ->with("success", "Revendedora criada com sucesso!");
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Reseller $reseller)
-    {
-        $reseller->load(["address", "contacts"]);
-        return view("resellers.show", compact("reseller"));
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -146,8 +215,8 @@ class ResellerController extends Controller
             ]);
 
             $reseller->address()->updateOrCreate(
-                [],
-                [
+                ['reseller_id' => $reseller->id], // Condição para encontrar
+                [ // Valores para atualizar ou criar
                     "street" => $validated["street"],
                     "number" => $validated["number"],
                     "city" => $validated["city"],
@@ -156,9 +225,9 @@ class ResellerController extends Controller
                 ],
             );
 
-            $reseller->contacts()->delete();
+            $reseller->contacts()->delete(); // Apaga os antigos
             foreach ($validated["contacts"] as $contactData) {
-                $reseller->contacts()->create([
+                $reseller->contacts()->create([ // Cria os novos
                     "phone" => $contactData["phone"],
                     "email" => $contactData["email"],
                 ]);
@@ -167,7 +236,7 @@ class ResellerController extends Controller
 
         return redirect()
             ->route("resellers.index")
-            ->with("success", "Reseller updated successfully!");
+            ->with("success", "Revendedora atualizada com sucesso!");
     }
 
     /**
@@ -181,14 +250,18 @@ class ResellerController extends Controller
             }
             $reseller->address()->delete();
             $reseller->contacts()->delete();
+            // Outras relações (reviews, certificate) serão deletadas pelo 'onDelete('cascade')'
             $reseller->delete();
         });
 
         return redirect()
             ->route("resellers.index")
-            ->with("success", "Reseller deleted successfully!");
+            ->with("success", "Revendedora desativada com sucesso!");
     }
 
+    /**
+     * Armazena uma nova avaliação (rating) para uma revendedora.
+     */
     public function storeRating(Request $request): RedirectResponse
     {
         $validated = $request->validate([

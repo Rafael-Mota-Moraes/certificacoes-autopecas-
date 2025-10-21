@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
-use App\Models\Reseller;
 use App\Models\Review;
 use App\Services\AbacatePayService;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+
 class CertificateController extends Controller
 {
     const MINIMUM_REVIEWS_REQUIRED = 100;
@@ -55,45 +54,14 @@ class CertificateController extends Controller
 
         $certificate->update([
             'payment_provider_id' => $pixCharge['data']['id'],
-            'pix_qr_code'         => $pixCharge['data']['brCodeBase64'],
-            'pix_emv'             => $pixCharge['data']['brCode'],
+            'pix_qr_code' => $pixCharge['data']['brCodeBase64'],
+            'pix_emv' => $pixCharge['data']['brCode'],
         ]);
 
         return view('certificates.payment', [
             'qrCode' => $certificate->pix_qr_code,
             'emv' => $certificate->pix_emv,
         ]);
-    }
-
-    public function isResellerAbleToRequestCertificate(Request $request): RedirectResponse
-    {
-        $validatedData = $request->validate([
-            "reseller_id" => "required|exists:resellers,id",
-        ]);
-
-        $reviewsQuery = Review::query()->where('reseller_id', $validatedData['reseller_id']);
-
-        $totalReviewsCount = $reviewsQuery->count();
-
-        if ($totalReviewsCount < self::MINIMUM_REVIEWS_REQUIRED) {
-            return redirect()->back()->withErrors([
-                "Mínimo de " . self::MINIMUM_REVIEWS_REQUIRED . " avaliações não alcançado."
-            ]);
-        }
-
-        $highRatedReviewsCount = $reviewsQuery->clone()
-            ->where('rating', '>=', self::MINIMUM_RATING_REQUIRED)
-            ->count();
-
-        $hasRequiredPercentage = ($highRatedReviewsCount / $totalReviewsCount) >= self::REQUIRED_HIGH_RATING_PERCENTAGE;
-
-        if (!$hasRequiredPercentage) {
-            return redirect()->back()->withErrors([
-                "A revendedora não possui 80% de avaliações com " . self::MINIMUM_RATING_REQUIRED . " estrelas ou mais."
-            ]);
-        }
-
-        return redirect()->with("success", "Revendedora apta a emitir certificado");
     }
 
 
