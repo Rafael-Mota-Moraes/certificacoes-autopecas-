@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Route;
 // PUT/PATCH /resellers/{reseller} - update
 // DELETE /resellers/{reseller} - destroy
 Route::resource("resellers", ResellerController::class);
-
+Route::get("/payment", function () {
+    return view("resellers.payment");
+})->name("payment");
 // User must be authenticated to submit ratings
 Route::middleware("auth")->group(function () {
     Route::post("reseller-ratings", [
