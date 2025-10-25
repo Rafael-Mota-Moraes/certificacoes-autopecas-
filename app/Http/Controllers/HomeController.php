@@ -18,8 +18,9 @@ class HomeController extends Controller
 
         $topRatedResellers = Reseller::with('reviews')
             ->withAvg('reviews', 'rating')
-            ->whereHas('certificate') 
-            ->where('active', true)
+            ->whereHas('certificate', function ($query) {
+                $query->where('status', 'paid');
+            })
             ->orderByDesc('reviews_avg_rating')
             ->take(20)
             ->get();

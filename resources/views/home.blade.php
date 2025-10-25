@@ -1,6 +1,59 @@
 <x-layout>
 
     <style>
+
+            /* Styles for the popup card, based on your image */
+            .popup-card {
+                background-color: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                width: 400px;
+                overflow: hidden;
+                border: 1px solid #e8e8e8;
+            }
+
+            .popup-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 16px;
+            }
+
+            .popup-title {
+                font-weight: bold;
+                font-size: 1rem;
+                color: #333;
+                text-transform: uppercase;
+            }
+
+            .popup-close {
+                cursor: pointer;
+                font-size: 1.5rem;
+                color: #888;
+                line-height: 1;
+                border: none;
+                background: none;
+            }
+            .popup-close:hover {
+                color: #333;
+            }
+
+            .popup-image-placeholder {
+                background-color: #e0e0e0;
+                width: 100%;
+                height: 120px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #aaa;
+            }
+
+            .popup-info {
+                padding: 16px;
+                font-size: 0.9rem;
+                color: #555;
+                line-height: 1.5;
+            }
         @media (max-width: 767px) {
 
             .swiper-button-prev,
@@ -256,11 +309,28 @@
             }).addTo(map);
 
             const resellers = @json($resellersForMap);
+            const customMarkerIcon = L.icon({
+                iconUrl: '/images/marker.png', // <-- Caminho para sua imagem
+                iconSize: [50, 60], // Tamanho do ícone [largura, altura]
+                iconAnchor: [12, 41], // Ponto do ícone que corresponde à localização (ponta de baixo)
+                popupAnchor: [1, -34] // Ponto onde o popup deve aparecer relativo ao ícone
+            });
 
             resellers.forEach(reseller => {
                 if (reseller.address && reseller.address.latitude && reseller.address.longitude) {
-                    const marker = L.marker([reseller.address.latitude, reseller.address.longitude]).addTo(map);
-                    const popupContent = `...`;
+                    const marker = L.marker([reseller.address.latitude, reseller.address.longitude],{ icon: customMarkerIcon }).addTo(map);
+                    const popupContent = `
+                                    <div class="popup-header">
+                                        <div class="popup-title">${reseller.name}</div>
+                                    </div>
+                                    <div class="popup-image-placeholder">
+                                        <img src="${reseller.image_url}" alt="${reseller.name}" style="width:100%; height:100%; object-fit: cover;">
+                                        <span>Image Placeholder</span>
+                                    </div>
+                                    <div class="popup-info">
+                                        Rua: ${reseller.address.street}<br>
+                                        Contato: ${reseller.contact}
+                                    </div>`;
                     marker.bindPopup(popupContent);
                 }
             });
