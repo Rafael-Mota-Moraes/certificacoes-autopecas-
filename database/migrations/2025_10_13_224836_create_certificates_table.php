@@ -13,12 +13,8 @@ return new class extends Migration
             $table->foreignId('reseller_id')->constrained()->onDelete('cascade');
 
             $table->string('status')->default('pending_payment');
-
-            $table->string('payment_id')->nullable();
-            $table->text('qr_code_data')->nullable();
             $table->decimal('amount', 8, 2);
             $table->timestamp('payment_expires_at')->nullable();
-            $table->string('file_path')->nullable();
 
             $table->timestamps();
         });

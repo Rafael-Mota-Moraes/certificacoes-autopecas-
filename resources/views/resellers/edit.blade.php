@@ -3,7 +3,6 @@
         <div class="w-full lg:max-w-4xl rounded-md">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Atualizar revendedora</h1>
             <div>
-                >
                 <form action="{{ route('resellers.update', $reseller) }}" method="POST" class="space-y-6"
                     enctype="multipart/form-data">
                     @csrf
@@ -16,7 +15,9 @@
                                 <input type="text" id="name" name="name" value="{{ $reseller->name }}"
                                     placeholder="{{ $reseller->name }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('name')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
@@ -24,7 +25,9 @@
                                 <input type="text" id="cnpj" name="cnpj" value="{{ $reseller->cnpj }}"
                                     placeholder="{{ $reseller->cnpj }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                @error('cnpj') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('cnpj')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Endereço</h2>
@@ -35,43 +38,55 @@
                                         value="{{ $reseller->address->zip_code }}"
                                         placeholder="{{ $reseller->address->zip_code }}"
                                         class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                    @error('zip_code') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @error('zip_code')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="flex-1">
-                                    <label for="state" class="block text-sm font-medium text-gray-700">Estado:</label>
-                                    <input type="text" id="state" name="state" value="{{ $reseller->address->state }}"
+                                    <label for="state"
+                                        class="block text-sm font-medium text-gray-700">Estado:</label>
+                                    <input type="text" id="state" name="state"
+                                        value="{{ $reseller->address->state }}"
                                         placeholder="{{ $reseller->address->state }}"
                                         class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                    @error('state') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @error('state')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
 
                             <div>
                                 <label for="city" class="block text-sm font-medium text-gray-700">Cidade:</label>
-                                <input type="text" id="city" name="city" value="{{ $reseller->address->city }}"
+                                <input type="text" id="city" name="city"
+                                    value="{{ $reseller->address->city }}"
                                     placeholder="{{ $reseller->address->city }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                @error('city') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('city')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
                                 <label for="street" class="block text-sm font-medium text-gray-700">Rua:</label>
-                                <input type="text" id="street" name="street" value="{{ $reseller->address->street }}"
+                                <input type="text" id="street" name="street"
+                                    value="{{ $reseller->address->street }}"
                                     placeholder="{{ $reseller->address->street }}"
                                     class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                @error('street') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('street')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="flex space-x-4">
                                 <div class="w-1/3">
-                                    <label for="number" class="block text-sm font-medium text-gray-700">Número:</label>
+                                    <label for="number"
+                                        class="block text-sm font-medium text-gray-700">Número:</label>
                                     <input type="text" id="number" name="number"
                                         value="{{ $reseller->address->number }}"
                                         placeholder="{{ $reseller->address->number }}"
                                         class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
-                                    @error('number') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @error('number')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="w-2/3">
@@ -91,7 +106,8 @@
                                         </label>
                                     </div>
                                     <input type="file" id="photo-upload" name="photo" class="hidden">
-                                    @error('photo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @error('photo')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
@@ -106,8 +122,10 @@
                                         <div>
                                             <label for="phone_{{ $index }}"
                                                 class="block text-sm font-medium text-gray-700">*Telefone:</label>
-                                            <input type="text" id="phone_{{ $index }}" name="contacts[{{ $index }}][phone]"
-                                                value="{{ old('contacts.' . $index . '.phone', $contact->phone) }}" required
+                                            <input type="text" id="phone_{{ $index }}"
+                                                name="contacts[{{ $index }}][phone]"
+                                                value="{{ old('contacts.' . $index . '.phone', $contact->phone) }}"
+                                                required
                                                 class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                             @error('contacts.' . $index . '.phone')
                                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -116,8 +134,10 @@
                                         <div>
                                             <label for="email_{{ $index }}"
                                                 class="block text-sm font-medium text-gray-700">*E-mail:</label>
-                                            <input type="email" id="email_{{ $index }}" name="contacts[{{ $index }}][email]"
-                                                value="{{ old('contacts.' . $index . '.email', $contact->email) }}" required
+                                            <input type="email" id="email_{{ $index }}"
+                                                name="contacts[{{ $index }}][email]"
+                                                value="{{ old('contacts.' . $index . '.email', $contact->email) }}"
+                                                required
                                                 class="mt-1 block w-full rounded-md px-3 py-2 border border-gray-300 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#840032] focus:border-[#840032] sm:text-sm">
                                             @error('contacts.' . $index . '.email')
                                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -155,14 +175,15 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const addContactBtn = document.getElementById('add-contact-btn');
         const contactsContainer = document.getElementById('contacts-container');
         let contactIndex = 1; // Start index for new contacts
 
-        addContactBtn.addEventListener('click', function () {
+        addContactBtn.addEventListener('click', function() {
             const newContactDiv = document.createElement('div');
-            newContactDiv.className = 'grid grid-cols-1 border border-gray-300 border-solid p-4 rounded-lg space-y-4';
+            newContactDiv.className =
+                'grid grid-cols-1 border border-gray-300 border-solid p-4 rounded-lg space-y-4';
 
             newContactDiv.innerHTML = `
                     <div>
@@ -183,7 +204,7 @@
         const photoUpload = document.getElementById('photo-upload');
         const photoFilename = document.getElementById('photo-filename');
 
-        photoUpload.addEventListener('change', function () {
+        photoUpload.addEventListener('change', function() {
             if (photoUpload.files.length > 0) {
                 photoFilename.textContent = photoUpload.files[0].name;
             } else {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
 
 class Reseller extends Model
 {
@@ -16,8 +17,11 @@ class Reseller extends Model
         'name',
         'cnpj',
         'photo',
-        'user_id'
+        'user_id',
+        'latitude',
+        'longitude',
     ];
+
 
     public function user(): BelongsTo
     {
@@ -48,5 +52,14 @@ class Reseller extends Model
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);
+    }
+
+    public function getPhotoAttribute($value): string
+    {
+        if ($value) {
+            return Storage::url($value);
+        }
+
+        return "/images/car-placeholder.png";
     }
 }

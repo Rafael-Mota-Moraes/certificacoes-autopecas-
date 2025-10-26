@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\UserReportController;
 use Illuminate\Support\Facades\Route;
 

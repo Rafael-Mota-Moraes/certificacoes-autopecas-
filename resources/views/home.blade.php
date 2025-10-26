@@ -1,6 +1,7 @@
 <x-layout>
 
     <style>
+<<<<<<< HEAD
 
             /* Styles for the popup card, based on your image */
             .popup-card {
@@ -54,6 +55,61 @@
                 color: #555;
                 line-height: 1.5;
             }
+=======
+        .popup-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            overflow: hidden;
+            border: 1px solid #e8e8e8;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+        }
+
+        .popup-title {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        .popup-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #888;
+            line-height: 1;
+            border: none;
+            background: none;
+        }
+
+        .popup-close:hover {
+            color: #333;
+        }
+
+        .popup-image-placeholder {
+            background-color: #e0e0e0;
+            width: 100%;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+        }
+
+        .popup-info {
+            padding: 16px;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+>>>>>>> 7-sistema-de-certificados
         @media (max-width: 767px) {
 
             .swiper-button-prev,
@@ -111,6 +167,31 @@
     }">
         <div class="container mx-auto px-4 py-12 text-center">
 
+            @if (session('success'))
+                <div class="mb-6 max-w-4xl mx-auto p-4 rounded-md bg-green-100 border border-green-300 text-green-800"
+                    role="alert">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('warning'))
+                <div class="mb-6 max-w-4xl mx-auto p-4 rounded-md bg-yellow-100 border border-yellow-300 text-yellow-800"
+                    role="alert">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-6 max-w-4xl mx-auto p-4 rounded-md bg-red-100 border border-red-300 text-red-800"
+                    role="alert">
+                    <ul class="list-disc list-inside text-left">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="max-w-md mx-auto mb-6 flex items-center text-gray bg-white rounded-full shadow-sm">
                 <button id="search-button" class="px-4 text-gray-500 hover:text-[#840032]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -130,35 +211,38 @@
 
         </div>
 
-        <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">Revendedoras
-            mais
-            avaliadas</h2>
+        @if ($topRatedResellers->isNotEmpty())
 
-        <div class="relative">
-            <section class="bg-[#840032] py-12">
-                <div class="container mx-auto px-4">
+            <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">
+                Revendedoras
+                certificadas </h2>
 
-                    <div class="swiper top-rated-swiper">
-                        <div class="swiper-wrapper">
-                            @foreach ($topRatedResellers as $reseller)
-                                <div class="swiper-slide ml-5">
-                                    <x-reseller-card :reseller="$reseller" />
-                                </div>
-                            @endforeach
+            <div class="relative">
+                <section class="bg-[#840032] py-12">
+                    <div class="container mx-auto px-4">
+
+                        <div class="swiper top-rated-swiper">
+                            <div class="swiper-wrapper">
+                                @foreach ($topRatedResellers as $reseller)
+                                    <div class="swiper-slide">
+                                        <x-reseller-card :reseller="$reseller" />
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
+                        <div class="swiper-button-prev hidden lg:block"></div>
+                        <div class="swiper-button-next hidden lg:block"></div>
                     </div>
-                    <div class="swiper-button-prev hidden lg:block"></div>
-                    <div class="swiper-button-next hidden lg:block"></div>
-                </div>
-            </section>
+                </section>
 
-            <div class="swiper-pagination top-rated-swiper-pagination"></div>
-        </div>
+                <div class="swiper-pagination top-rated-swiper-pagination"></div>
+            </div>
 
+        @endif
 
         <section class="py-16">
             <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
+                <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Revendedoras</h2>
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-8">
                     @foreach ($otherResellers as $reseller)
@@ -216,7 +300,8 @@
                         <div class="flex flex-wrap gap-2 justify-center">
                             <template x-for="comment in allComments.filter(c => c.rate == selectedRating)"
                                 :key="comment.id">
-                                <label :for="'comment_' + comment.id" :class="{
+                                <label :for="'comment_' + comment.id"
+                                    :class="{
                                         'bg-[#840032] text-white': selectedComments.some(id => id == comment.id),
                                         'bg-gray-200 text-gray-800 hover:bg-gray-300': !selectedComments.some(id =>
                                             id == comment.id)
@@ -251,18 +336,18 @@
             style="display: none;">
             @props(['reseller'])
             <div @click.away="detailModalOpen = false"
-                class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 p-6 relative">
+                class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 p-16 relative">
                 <template x-if="selectedReseller">
                     <div class="">
-                        <template x-if="selectedReseller.has_certificate">
-                            <img x-if="selectedReseller.certificate" class="absolute top-0 -left-2 z-10 w-30 h-30"
-                                src="images/mini_certificate.svg" alt="Certificado">
+                        <template x-if="selectedReseller.certificate && selectedReseller.certificate.status == 'paid'">
+                            <img class="absolute top-0 -left-2 z-10 w-30 h-30" src="/images/mini_certificate.svg"
+                                alt="Certificado">
                         </template>
 
                         <div class="flex md:flex-row gap-6 mt-8">
                             <div class="w-full align-center">
                                 <img class="w-full h-75 object-cover rounded-md"
-                                    :src="selectedReseller.image_url || 'images/car-placeholder.png'" alt="Foto">
+                                    :src="selectedReseller.photo || 'images/car-placeholder.png'" alt="Foto">
                                 <div
                                     class="flex pl-2 items-center border-b-1 border-color-black border-solid justify-between mb-2">
                                     <div>
@@ -310,22 +395,40 @@
 
             const resellers = @json($resellersForMap);
             const customMarkerIcon = L.icon({
+<<<<<<< HEAD
                 iconUrl: '/images/marker.png', // <-- Caminho para sua imagem
                 iconSize: [50, 60], // Tamanho do ícone [largura, altura]
                 iconAnchor: [12, 41], // Ponto do ícone que corresponde à localização (ponta de baixo)
                 popupAnchor: [1, -34] // Ponto onde o popup deve aparecer relativo ao ícone
+=======
+                iconUrl: '/images/marker.png',
+                iconSize: [50, 60],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34]
+>>>>>>> 7-sistema-de-certificados
             });
 
             resellers.forEach(reseller => {
                 if (reseller.address && reseller.address.latitude && reseller.address.longitude) {
+<<<<<<< HEAD
                     const marker = L.marker([reseller.address.latitude, reseller.address.longitude],{ icon: customMarkerIcon }).addTo(map);
+=======
+                    const marker = L.marker([reseller.address.latitude, reseller.address.longitude], {
+                        icon: customMarkerIcon
+                    }).addTo(map);
+>>>>>>> 7-sistema-de-certificados
                     const popupContent = `
                                     <div class="popup-header">
                                         <div class="popup-title">${reseller.name}</div>
                                     </div>
                                     <div class="popup-image-placeholder">
+<<<<<<< HEAD
                                         <img src="${reseller.image_url}" alt="${reseller.name}" style="width:100%; height:100%; object-fit: cover;">
                                         <span>Image Placeholder</span>
+=======
+                                        <img src="${reseller.photo}" alt="${reseller.name}" style="width:100%; height:100%; object-fit: cover;">
+                                   
+>>>>>>> 7-sistema-de-certificados
                                     </div>
                                     <div class="popup-info">
                                         Rua: ${reseller.address.street}<br>
@@ -345,7 +448,6 @@
                     return;
                 }
 
-                // URL da API Nominatim
                 const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
 
                 fetch(apiUrl)
@@ -389,34 +491,36 @@
                 }
             });
 
-            const swiper = new Swiper('.top-rated-swiper', {
-                autoplay: true,
-                loop: true,
-                spaceBetween: 30,
-                slidesPerView: 1,
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
+            if (document.querySelector('.top-rated-swiper')) {
+                const swiper = new Swiper('.top-rated-swiper', {
+                    autoplay: true,
+                    loop: true,
+                    spaceBetween: 30,
+                    slidesPerView: 1,
+                    breakpoints: {
+                        640: {
+                            slidesPerView: 2,
+                            spaceBetween: 20,
+                        },
+                        768: {
+                            slidesPerView: 3,
+                            spaceBetween: 30,
+                        },
+                        1024: {
+                            slidesPerView: 4,
+                            spaceBetween: 40,
+                        },
                     },
-                    768: {
-                        slidesPerView: 3,
-                        spaceBetween: 30,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
                     },
-                    1024: {
-                        slidesPerView: 4,
-                        spaceBetween: 40,
+                    pagination: {
+                        el: '.top-rated-swiper-pagination',
+                        clickable: true,
                     },
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                pagination: {
-                    el: '.top-rated-swiper-pagination',
-                    clickable: true,
-                },
-            });
+                });
+            }
         </script>
     @endpush
 </x-layout>
