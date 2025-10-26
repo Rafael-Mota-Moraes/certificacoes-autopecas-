@@ -13,10 +13,12 @@ class AbacatePayWebhookController extends Controller
     public function handle(Request $request): \Illuminate\Http\JsonResponse
     {
         $payload = $request->all();
+        Log::debug('Webhook AbacatePay Recebido:', $payload);
 
-        if (isset($payload['event']) && $payload['event'] === 'pix.paid') {
+        if (isset($payload['event']) && $payload['event'] === 'billing.paid') {
+            $certificateId = $payload['data']['pixQrCode']['metadata']['certificate_id'] ?? null;
 
-            $certificateId = $payload['data']['metadata']['certificate_id'] ?? null;
+            Log::debug("Certificate ID extraído: " . ($certificateId ?? 'NULO'));
 
             if (!$certificateId) {
                 Log::warning('Webhook AbacatePay recebido sem certificate_id nos metadados.');
@@ -25,10 +27,18 @@ class AbacatePayWebhookController extends Controller
 
             $certificate = Certificate::find($certificateId);
 
-            if ($certificate && $certificate->status === 'pending_payment') {
-                $certificate->update(['status' => 'paid']);
+            if (!$certificate) {
+                Log::error("Certificado #{$certificateId} NÃO ENCONTRADO no banco.");
+                return response()->json(['status' => 'error', 'message' => 'Certificate not found']);
+            }
 
-                Log::info("Certificado #{$certificate->id} pago com sucesso via Webhook.");
+            Log::debug("Certificado #{$certificateId} encontrado. Status atual: {$certificate->status}");
+
+            if ($certificate->status === 'pending_payment') {
+                $certificate->update(['status' => 'paid']);
+                Log::info("Certificado #{$certificateId} ATUALIZADO para 'paid'.");
+            } else {
+                Log::info("Certificado #{$certificateId} já estava com status '{$certificate->status}'. Ignorando.");
             }
         }
 

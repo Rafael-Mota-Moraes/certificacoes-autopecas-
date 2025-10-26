@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Certificate extends Model
 {
-
     protected $fillable = [
         "reseller_id",
         "status",
@@ -18,6 +17,9 @@ class Certificate extends Model
         "pix_emv",
     ];
 
+    protected $casts = [
+        'payment_expires_at' => 'datetime',
+    ];
 
     public function reseller(): BelongsTo
     {

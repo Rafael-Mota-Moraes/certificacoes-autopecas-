@@ -34,7 +34,7 @@ class UserController extends Controller
             return redirect()
                 ->route("register")
                 ->withErrors($validatedData)
-                ->withInput(); // withInput() mantém os dados antigos no formulário
+                ->withInput();
         }
 
         $user = User::create([

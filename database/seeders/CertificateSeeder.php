@@ -9,23 +9,56 @@ use Illuminate\Support\Str;
 
 class CertificateSeeder extends Seeder
 {
-
     public function run(): void
     {
-        $this->command->info('Criando certificados para revendedoras...');
 
-        $resellers = Reseller::doesntHave('certificate')->get();
+        $minReviews = 100;
+        $minPositivePercentage = 80;
 
-        if ($resellers->isEmpty()) {
-            $this->command->warn('Nenhuma revendedora sem certificado encontrada.');
+        $eligibleResellers = Reseller::doesntHave('certificate')
+            ->withCount('reviews')
+            ->withCount(['reviews as positive_reviews_count' => function ($query) {
+                $query->where('rating', '>=', 4);
+            }])
+            ->get()
+            ->filter(function (Reseller $reseller) use ($minReviews, $minPositivePercentage) {
+
+                if ($reseller->reviews_count < $minReviews) {
+                    return false;
+                }
+
+                if ($reseller->reviews_count === 0) {
+                    return false;
+                }
+
+                $positivePercentage = ($reseller->positive_reviews_count / $reseller->reviews_count) * 100;
+
+                return $positivePercentage >= $minPositivePercentage;
+            });
+
+        if ($eligibleResellers->isEmpty()) {
+            $this->command->warn('Nenhuma revendedora VÁLIDA (>= 100 reviews, >= 80% positivas) sem certificado encontrada.');
             return;
         }
 
-        $resellersCount = $resellers->count();
-        $paidCount = ceil($resellersCount / 2);
+        $totalEligibleCount = $eligibleResellers->count();
 
-        $resellersPaid = $resellers->take($paidCount);
-        $resellersPending = $resellers->skip($paidCount);
+
+        $certifyCount = (int) ceil($totalEligibleCount / 2);
+        $resellersToCertify = $eligibleResellers->take($certifyCount);
+        $resellersToIgnoreCount = $totalEligibleCount - $certifyCount;
+
+
+        $resellersCount = $resellersToCertify->count();
+        if ($resellersCount === 0) {
+            $this->command->info('Nenhum certificado a ser criado nesta execução.');
+            return;
+        }
+
+        $paidCount = (int) ceil($resellersCount / 2);
+
+        $resellersPaid = $resellersToCertify->take($paidCount);
+        $resellersPending = $resellersToCertify->skip($paidCount);
 
         $certificatePrice = 99.90;
 
@@ -55,7 +88,7 @@ class CertificateSeeder extends Seeder
 
         $this->command->info(
             $resellersPaid->count() . ' certificados "paid" e ' .
-            $resellersPending->count() . ' certificados "pending_payment" criados.'
+                $resellersPending->count() . ' certificados "pending_payment" criados.'
         );
     }
 }

@@ -16,5 +16,13 @@ class UserSeeder extends Seeder
             'cpf' => "12345678999",
             'active' => true,
         ]);
+
+        User::create([
+            'name' => "user",
+            'email' => "user@gmail.com",
+            'password' => "user123",
+            'cpf' => "22345678999",
+            'active' => true,
+        ]);
     }
 }

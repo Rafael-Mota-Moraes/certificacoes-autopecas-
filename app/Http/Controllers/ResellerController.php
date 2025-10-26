@@ -3,33 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\ChecksCertificateEligibility;
+use App\Models\Certificate;
 use App\Models\Reseller;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
-// 1. Importar o Trait
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Http;
 
 class ResellerController extends Controller
 {
     use ChecksCertificateEligibility;
 
-    // 2. Usar o Trait
 
-    /**
-     * Exibe a página de detalhes e avaliações da revendedora.
-     */
     public function show(Request $request, Reseller $reseller)
     {
         $reseller->load('certificate');
 
-        // --- Query base e cálculos de média/total ---
         $allReviewsQuery = $reseller->reviews();
         $averageRating = $allReviewsQuery->avg('rating') ?? 0;
 
-        // Contagem para cada estrela
         $ratingCounts = (clone $allReviewsQuery)
             ->select('rating', DB::raw('count(*) as count'))
             ->groupBy('rating')
@@ -44,11 +39,7 @@ class ResellerController extends Controller
             '1' => $ratingCounts[1] ?? 0,
         ];
 
-        // --- LÓGICA DE CRITÉRIOS (agora usa o Trait) ---
         $eligibility = $this->checkEligibility($reseller);
-        // ----------------------------------------------
-
-        // --- Filtragem e Paginação ---
         $reviewsQuery = $reseller->reviews()->with('user', 'comments');
 
         $currentRating = $request->input('rating');
@@ -56,64 +47,46 @@ class ResellerController extends Controller
             $reviewsQuery->where('rating', $currentRating);
         }
 
-        $reviews = $reviewsQuery->latest()->paginate(8);
+        $reviews = $reviewsQuery->latest()->paginate(18);
 
-        // --- Envia tudo para a View ---
+        $hasActiveCertificate = Certificate::find($reseller->certificate?->id)?->where('status', 'paid')->exists();
+
         return view('resellers.show', [
             'reseller' => $reseller,
             'reviews' => $reviews,
+            'hasActiveCertificate' => $hasActiveCertificate,
             'averageRating' => $averageRating,
-
-            // Variáveis vindas do Trait
             'totalReviews' => $eligibility['totalReviews'],
             'positivePercentage' => round($eligibility['positivePercentage'] * 100),
-
-            // Constantes do Trait
             'criteriaReviews' => self::MINIMUM_REVIEWS_REQUIRED,
-            'criteriaPercentage' => self::REQUIRED_HIGH_RATING_PERCENTAGE * 100, // Envia 80
-
-            // Resultados Booleanos do Trait
+            'criteriaPercentage' => self::REQUIRED_HIGH_RATING_PERCENTAGE * 100,
             'meetsReviews' => $eligibility['meetsReviews'],
             'meetsPercentage' => $eligibility['meetsPercentage'],
-
-            // Outras vars
             'starCounts' => $starCounts,
             'currentRating' => $currentRating,
         ]);
     }
 
-    /**
-     * Exibe a lista de revendedoras do usuário (Minhas Revendedoras).
-     */
     public function index()
     {
-        // 3. Ordenar pelo certificado
         $resellers = Reseller::where("user_id", auth()->id())
-            ->with("address", "contacts", "certificate") // Carrega o certificado
-            // Cria uma coluna virtual 'has_active_certificate' (true/false)
+            ->with("address", "contacts", "certificate")
             ->withExists(['certificate as has_active_certificate' => function ($query) {
                 $query->where('status', 'pago');
             }])
-            // Ordena por essa coluna, colocando os 'true' (certificados) primeiro
             ->orderBy('has_active_certificate', 'desc')
-            ->orderBy('name', 'asc') // Ordena alfabeticamente como segundo critério
-            ->paginate(9); // Pagina os resultados
+            ->orderBy('name', 'asc')->get();
 
         return view("resellers.index", compact("resellers"));
     }
 
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view("resellers.create");
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -130,7 +103,16 @@ class ResellerController extends Controller
             "contacts.*.email" => "required|email|unique:contacts,email",
         ]);
 
-        DB::transaction(function () use ($validated, $request) {
+        $coordinates = $this->getCoordinatesFromAddress(
+            $validated["street"],
+            $validated["number"],
+            $validated["city"],
+            $validated["state"],
+            $validated["zip_code"]
+        );
+
+
+        DB::transaction(function () use ($validated, $request, $coordinates) {
             $photoPath = null;
             if ($request->hasFile("photo")) {
                 $photoPath = $request
@@ -139,7 +121,7 @@ class ResellerController extends Controller
             }
 
             $reseller = Reseller::create([
-                "user_id" => auth()->id(), // 4. Corrigido
+                "user_id" => auth()->id(),
                 "name" => $validated["name"],
                 "cnpj" => $validated["cnpj"],
                 "photo" => $photoPath,
@@ -147,7 +129,7 @@ class ResellerController extends Controller
 
             $reseller
                 ->address()
-                ->create(
+                ->create(array_merge(
                     $request->only([
                         "street",
                         "number",
@@ -155,9 +137,12 @@ class ResellerController extends Controller
                         "state",
                         "zip_code",
                     ]),
-                );
+                    [
+                        'latitude' => $coordinates['lat'],
+                        'longitude' => $coordinates['lon'],
+                    ]
+                ));
 
-            // 5. Corrigido para salvar múltiplos contatos
             foreach ($validated["contacts"] as $contactData) {
                 $reseller->contacts()->create($contactData);
             }
@@ -169,18 +154,14 @@ class ResellerController extends Controller
     }
 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(Reseller $reseller)
     {
         $reseller->load(["address", "contacts"]);
         return view("resellers.edit", compact("reseller"));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, Reseller $reseller)
     {
         $validated = $request->validate([
@@ -197,7 +178,14 @@ class ResellerController extends Controller
             "contacts.*.email" => "required|email",
         ]);
 
-        DB::transaction(function () use ($validated, $reseller, $request) {
+        $coordinates = $this->getCoordinatesFromAddress(
+            $validated["street"],
+            $validated["number"],
+            $validated["city"],
+            $validated["state"],
+            $validated["zip_code"]
+        );
+        DB::transaction(function () use ($validated, $reseller, $request, $coordinates) {
             $photoPath = $reseller->photo;
             if ($request->hasFile("photo")) {
                 if ($photoPath) {
@@ -215,19 +203,21 @@ class ResellerController extends Controller
             ]);
 
             $reseller->address()->updateOrCreate(
-                ['reseller_id' => $reseller->id], // Condição para encontrar
-                [ // Valores para atualizar ou criar
+                ['reseller_id' => $reseller->id],
+                [
                     "street" => $validated["street"],
                     "number" => $validated["number"],
                     "city" => $validated["city"],
                     "state" => $validated["state"],
                     "zip_code" => $validated["zip_code"],
-                ],
+                    'latitude' => $coordinates['lat'],
+                    'longitude' => $coordinates['lon'],
+                ]
             );
 
-            $reseller->contacts()->delete(); // Apaga os antigos
+            $reseller->contacts()->delete();
             foreach ($validated["contacts"] as $contactData) {
-                $reseller->contacts()->create([ // Cria os novos
+                $reseller->contacts()->create([
                     "phone" => $contactData["phone"],
                     "email" => $contactData["email"],
                 ]);
@@ -237,6 +227,60 @@ class ResellerController extends Controller
         return redirect()
             ->route("resellers.index")
             ->with("success", "Revendedora atualizada com sucesso!");
+    }
+
+    public function updatePhoto(Request $request, Reseller $reseller): RedirectResponse
+    {
+        $validated = $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $currentPhotoPath = $reseller->getAttributes()['photo'] ?? null;
+
+        if ($request->hasFile("photo")) {
+            if ($currentPhotoPath) {
+                Storage::disk("public")->delete($currentPhotoPath);
+            }
+
+            $newPhotoPath = $request
+                ->file("photo")
+                ->store("reseller_photos", "public");
+
+            $reseller->update(['photo' => $newPhotoPath]);
+        }
+
+        return redirect()
+            ->route("resellers.index")
+            ->with("success", "Foto da revendedora atualizada com sucesso!");
+    }
+
+
+    private function getCoordinatesFromAddress(string $street, string $number, string $city, string $state, string $zip_code): array
+    {
+        $addressString = "{$number} {$street}, {$city}, {$state}, {$zip_code}";
+        $apiUrl = "https://nominatim.openstreetmap.org/search";
+
+        try {
+            $response = Http::withHeaders([
+                'User-Agent' => 'certificar/1.0 (noreply@certificar.com)'
+            ])->get($apiUrl, [
+                'q' => $addressString,
+                'format' => 'json',
+                'limit' => 1
+            ]);
+
+            if ($response->successful() && !empty($response->json())) {
+                $data = $response->json()[0];
+                return [
+                    'lat' => $data['lat'],
+                    'lon' => $data['lon'],
+                ];
+            }
+
+            return ['lat' => null, 'lon' => null];
+        } catch (\Exception $e) {
+            return ['lat' => null, 'lon' => null];
+        }
     }
 
     /**
@@ -250,7 +294,6 @@ class ResellerController extends Controller
             }
             $reseller->address()->delete();
             $reseller->contacts()->delete();
-            // Outras relações (reviews, certificate) serão deletadas pelo 'onDelete('cascade')'
             $reseller->delete();
         });
 
@@ -259,16 +302,21 @@ class ResellerController extends Controller
             ->with("success", "Revendedora desativada com sucesso!");
     }
 
-    /**
-     * Armazena uma nova avaliação (rating) para uma revendedora.
-     */
     public function storeRating(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            "reseller_id" => "required|exists:resellers,id",
+            "reseller_id" => [
+                'required',
+                'exists:resellers,id',
+                Rule::unique('reviews')->where(function ($query) {
+                    return $query->where('user_id', auth()->id());
+                })
+            ],
             "rating" => "required|integer|min:1|max:5",
             "comment_ids" => "nullable|array",
             "comment_ids.*" => "integer|exists:comments,id",
+        ], [
+            'reseller_id.unique' => 'Você já avaliou esta revendedora.'
         ]);
 
         $review = Review::create([
@@ -281,8 +329,32 @@ class ResellerController extends Controller
             $review->comments()->attach($validated["comment_ids"]);
         }
 
+        $flashMessages = ['success' => 'Avaliação enviada com sucesso!'];
+
+        if ($validated["rating"] == 1) {
+            $recentReviews = Review::where('reseller_id', $validated["reseller_id"])
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get();
+
+            $hasTenReviews = $recentReviews->count() >= 10;
+            $allAreOneStar = $recentReviews->every(fn($r) => $r->rating == 1);
+
+            if ($hasTenReviews && $allAreOneStar) {
+                $certificate = Certificate::where('reseller_id', $validated["reseller_id"])
+                    ->where('status', 'paid')
+                    ->first();
+
+                if ($certificate) {
+                    $certificate->update(['status' => 'revoked']);
+
+                    $flashMessages['warning'] = 'Devido a 10 avaliações negativas seguidas, o certificado desta revendedora foi revogado.';
+                }
+            }
+        }
+
         return redirect()
             ->back()
-            ->with("success", "Avaliação enviada com sucesso!");
+            ->with($flashMessages);
     }
 }

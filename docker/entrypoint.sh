@@ -15,9 +15,9 @@ else
     echo "APP_KEY já está definida."
 fi
 
-php artisan migrate --force
+php artisan migrate
 
-php artisan db:seed --force
+php artisan db:seed
 
 if [ ! -L "public/storage" ]; then
     echo "Criando o link do storage..."
