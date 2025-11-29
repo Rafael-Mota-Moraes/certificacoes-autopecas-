@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reseller;
 use App\Models\Comment;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -13,8 +14,10 @@ class HomeController extends Controller
     const OTHERS_PER_PAGE = 12;
 
 
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $allCertifiedResellers = Reseller::with(['certificate', 'address', 'contacts'])
             ->withAvg('reviews', 'rating')
             ->whereHas('certificate', function ($query) {
@@ -29,13 +32,19 @@ class HomeController extends Controller
 
         $avgSubQuery = '(select avg("reviews"."rating") from "reviews" where "resellers"."id" = "reviews"."reseller_id")';
 
-        $otherResellers = Reseller::with(['certificate', 'address', 'contacts'])
-            ->withAvg('reviews', 'rating')
-            ->whereNotIn('id', $topRatedIds)
+        $otherResellersQuery = Reseller::with(['certificate', 'address', 'contacts'])
+            ->withAvg('reviews', 'rating');
+
+        if ($search) {
+            $otherResellersQuery->where('name', 'like', '%' . $search . '%');
+        } else {
+            $otherResellersQuery->whereNotIn('id', $topRatedIds);
+        }
+
+        $otherResellers = $otherResellersQuery
             ->orderByRaw("{$avgSubQuery} IS NULL ASC")
             ->orderByRaw("{$avgSubQuery} DESC")
             ->orderBy('name', 'asc')
-
             ->paginate(self::OTHERS_PER_PAGE);
 
         $comments = Comment::all();

@@ -1,9 +1,6 @@
 <x-layout>
 
     <style>
-        <<<<<<< HEAD
-
-        /* Styles for the popup card, based on your image */
         .popup-card {
             background-color: white;
             border-radius: 12px;
@@ -57,60 +54,7 @@
             line-height: 1.5;
         }
 
-        =======.popup-card {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            overflow: hidden;
-            border: 1px solid #e8e8e8;
-        }
-
-        .popup-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-        }
-
-        .popup-title {
-            font-weight: bold;
-            font-size: 1rem;
-            color: #333;
-            text-transform: uppercase;
-        }
-
-        .popup-close {
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: #888;
-            line-height: 1;
-            border: none;
-            background: none;
-        }
-
-        .popup-close:hover {
-            color: #333;
-        }
-
-        .popup-image-placeholder {
-            background-color: #e0e0e0;
-            width: 100%;
-            height: 120px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #aaa;
-        }
-
-        .popup-info {
-            padding: 16px;
-            font-size: 0.9rem;
-            color: #555;
-            line-height: 1.5;
-        }
-
-        >>>>>>>7-sistema-de-certificados @media (max-width: 767px) {
+        @media (max-width: 767px) {
 
             .swiper-button-prev,
             .swiper-button-next {
@@ -211,7 +155,7 @@
 
         </div>
 
-        @if ($topRatedResellers->isNotEmpty())
+                @if ($topRatedResellers->isNotEmpty())
 
             <h2 id="topRatedResellers" class="text-3xl font-extrabold text-black text-center uppercase mb-8">
                 Revendedoras
@@ -240,19 +184,40 @@
 
         @endif
 
+        <div class="container mx-auto px-4 py-8">
+            <form action="{{ route('home') }}" method="GET"
+                class="max-w-xl mx-auto flex items-center text-gray bg-white rounded-full shadow-sm border border-gray-200">
+                <input type="text" name="search" placeholder="Buscar revendedora por nome..."
+                    class="w-full py-3 px-6 bg-transparent focus:outline-none rounded-l-full"
+                    value="{{ request('search') }}">
+                <button type="submit" class="bg-[#840032] text-white py-3 px-6 rounded-r-full hover:bg-[#6a0028] transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
+        </div>
         <section class="py-16">
             <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Revendedoras</h2>
+                <h2 class="text-3xl font-extrabold text-gray-800 text-center uppercase mb-12">Outras Revendedoras</h2>
 
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-8">
-                    @foreach ($otherResellers as $reseller)
-                        <x-reseller-card :reseller="$reseller" />
-                    @endforeach
-                </div>
+                @if ($otherResellers->isEmpty() && request('search'))
+                    <div class="text-center text-gray-600 text-xl">
+                        Nenhuma revendedora encontrada com o termo "{{ request('search') }}".
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                        @foreach ($otherResellers as $reseller)
+                            <x-reseller-card :reseller="$reseller" />
+                        @endforeach
+                    </div>
 
-                <div class="mt-12 flex justify-center">
-                    {{ $otherResellers->links() }}
-                </div>
+                    <div class="mt-12 flex justify-center">
+                        {{ $otherResellers->links() }}
+                    </div>
+                @endif
             </div>
         </section>
 
