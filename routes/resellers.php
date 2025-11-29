@@ -27,11 +27,6 @@ Route::middleware("auth")->group(function () {
         "storeRating",
     ])->name("reseller-ratings.store");
 
-    Route::get("/reseller/{reseller}", [
-        ResellerController::class,
-        "show",
-    ])->name("reseller.show");
-
     Route::patch('/resellers/{reseller}/update-photo', [ResellerController::class, 'updatePhoto'])
         ->name('resellers.updatePhoto')
         ->middleware('auth');

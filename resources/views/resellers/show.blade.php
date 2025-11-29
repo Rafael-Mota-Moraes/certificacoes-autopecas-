@@ -102,14 +102,14 @@
             </div>
 
             <div class="flex flex-wrap gap-2 justify-center mb-10">
-                <a href="{{ route('reseller.show', $reseller) }}"
+                <a href="{{ route('resellers.show', $reseller) }}"
                     class="px-4 py-2 rounded-md border-2 text-sm font-semibold transition-colors
                           {{ !$currentRating ? 'bg-[#840032] text-white border-[#840032]' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
                     Todas ({{ $totalReviews }})
                 </a>
 
                 @for ($star = 5; $star >= 1; $star--)
-                    <a href="{{ route('reseller.show', ['reseller' => $reseller, 'rating' => $star]) }}"
+                    <a href="{{ route('resellers.show', ['reseller' => $reseller, 'rating' => $star]) }}"
                         class="px-4 py-2 rounded-md border-2 text-sm font-semibold transition-colors
                               {{ $currentRating == $star ? 'bg-[#840032] text-white border-[#840032]' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
                         {{ $star }} estrelas ({{ $starCounts[$star] }})

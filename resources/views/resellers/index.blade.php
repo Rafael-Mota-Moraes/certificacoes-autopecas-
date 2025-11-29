@@ -72,7 +72,7 @@
                                         <p class="text-sm text-gray-500">
                                             CNPJ: {{ $reseller->cnpj ?? 'Não informado' }}</p>
                                     </div>
-                                    <a href="{{ route('reseller.show', $reseller) }}"
+                                    <a href="{{ route('resellers.show', $reseller) }}"
                                         title="Ver avaliações de {{ $reseller->name }}"
                                         class="text-sm text-[#840032] border border-[#840032] rounded-md px-3 py-1 shrink-0 hover:bg-[#840032] hover:text-white transition-colors">
                                         Ver avaliações
