@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="flex items-center justify-between pt-4">
-                            <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:text-[#840032] transition-colors">Voltar</a>
+                            <a href="{{ route('login') }}" class="bg-white text-[#840032] border border-[#840032] font-semibold py-2 px-6 rounded-md hover:bg-gray-100 transition-colors">Voltar</a>
                             <button type="submit"
                                     class="bg-[#840032] text-white font-semibold py-2 px-6 rounded-md hover:bg-[#6a0028] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#840032] transition-colors">
                                 Cadastrar

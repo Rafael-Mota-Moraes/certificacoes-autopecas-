@@ -162,7 +162,7 @@
                             Atualizar
                         </button>
                         <a href="{{ route('resellers.index') }}"
-                            class="text-gray-600 font-medium hover:text-gray-900 transition-colors">
+                            class="bg-white text-[#840032] border border-[#840032] font-bold py-3 px-8 rounded-md hover:bg-gray-100 transition-colors">
                             Voltar
                         </a>
 

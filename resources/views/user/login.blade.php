@@ -59,7 +59,7 @@
 
                         <div class="pt-6 flex justify-end items-center">
                             <a href="{{ url()->previous() }}"
-                                class="text-[#840032] font-semibold transition-colors mx-4">
+                                class="bg-white text-[#840032] border border-[#840032] font-semibold py-2 px-10 rounded-md hover:bg-gray-100 transition-colors mx-2">
                                 Voltar
                             </a>
                             <button type="submit"
@@ -72,7 +72,6 @@
             </div>
         </div>
 
-        {{-- 4. Agora o modal está DENTRO do 'div' que tem o 'x-data' --}}
         <div x-show="showPasswordModal" x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
@@ -100,7 +99,7 @@
 
                     <div class="pt-6 flex justify-end items-center">
                         <button type="button" @click="showPasswordModal = false"
-                            class="text-[#840032] font-semibold transition-colors mx-4">
+                            class="bg-white text-[#840032] border border-[#840032] font-semibold py-2 px-10 rounded-md hover:bg-gray-100 transition-colors mx-2">
                             Cancelar
                         </button>
                         <button type="submit"

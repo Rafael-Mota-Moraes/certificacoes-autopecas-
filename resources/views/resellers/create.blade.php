@@ -136,7 +136,7 @@
 
                         <div class="flex items-center justify-center space-x-6 pt-6 border-t border-gray-200">
                             <a href="{{ route('resellers.index') }}"
-                                class="text-gray-600 font-medium hover:text-gray-900 transition-colors">
+                                class="bg-white text-[#840032] border border-[#840032] font-bold py-3 px-8 rounded-md hover:bg-gray-100 transition-colors">
                                 Voltar
                             </a>
                             <button type="submit"
