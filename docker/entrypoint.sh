@@ -17,8 +17,6 @@ fi
 
 php artisan migrate
 
-php artisan db:seed
-
 if [ ! -L "public/storage" ]; then
     echo "Criando o link do storage..."
     php artisan storage:link

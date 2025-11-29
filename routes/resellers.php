@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 // PUT/PATCH /resellers/{reseller} - update
 // DELETE /resellers/{reseller} - destroy
 Route::resource("resellers", ResellerController::class);
+Route::post('/resellers/{id}/restore', [ResellerController::class, 'restore'])->name('resellers.restore');
 
 Route::get("/payment/create/{reseller}", [
     CertificateController::class,
