@@ -416,7 +416,10 @@
                                     </div>
                                     <div class="popup-info">
                                         Rua: ${reseller.address.street}<br>
-                                        Contato: ${reseller.contact}
+                                        ${reseller.contacts && reseller.contacts.length > 0 ? `
+                                            Tel: ${reseller.contacts[0].phone || 'N/A'}<br>
+                                            Email: ${reseller.contacts[0].email || 'N/A'}
+                                        ` : ''}
                                     </div>`;
                     marker.bindPopup(popupContent);
                 }

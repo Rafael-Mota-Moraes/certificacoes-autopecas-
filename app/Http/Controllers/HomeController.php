@@ -40,7 +40,7 @@ class HomeController extends Controller
 
         $comments = Comment::all();
 
-        $resellersForMap = Reseller::with(['address', 'certificate'])
+        $resellersForMap = Reseller::with(['address', 'certificate', 'contacts'])
             ->whereHas('address', function ($query) {
                 $query->whereNotNull('latitude')->whereNotNull('longitude');
             })
