@@ -69,7 +69,7 @@ class ResellerController extends Controller
 
     public function index()
     {
-        $resellers = Reseller::where("user_id", auth()->id())
+        $resellers = Reseller::withTrashed()->where("user_id", auth()->id())
             ->with("address", "contacts", "certificate")
             ->withExists(['certificate as has_active_certificate' => function ($query) {
                 $query->where('status', 'pago');
@@ -288,73 +288,25 @@ class ResellerController extends Controller
      */
     public function destroy(Reseller $reseller)
     {
-        DB::transaction(function () use ($reseller) {
-            if ($reseller->photo) {
-                Storage::disk("public")->delete($reseller->photo);
-            }
-            $reseller->address()->delete();
-            $reseller->contacts()->delete();
-            $reseller->delete();
-        });
+        $reseller->delete();
 
         return redirect()
             ->route("resellers.index")
             ->with("success", "Revendedora desativada com sucesso!");
     }
 
-    public function storeRating(Request $request): RedirectResponse
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore($id)
     {
-        $validated = $request->validate([
-            "reseller_id" => [
-                'required',
-                'exists:resellers,id',
-                Rule::unique('reviews')->where(function ($query) {
-                    return $query->where('user_id', auth()->id());
-                })
-            ],
-            "rating" => "required|integer|min:1|max:5",
-            "comment_ids" => "nullable|array",
-            "comment_ids.*" => "integer|exists:comments,id",
-        ], [
-            'reseller_id.unique' => 'Você já avaliou esta revendedora.'
-        ]);
-
-        $review = Review::create([
-            "reseller_id" => $validated["reseller_id"],
-            "user_id" => auth()->id(),
-            "rating" => $validated["rating"],
-        ]);
-
-        if (!empty($validated["comment_ids"])) {
-            $review->comments()->attach($validated["comment_ids"]);
-        }
-
-        $flashMessages = ['success' => 'Avaliação enviada com sucesso!'];
-
-        if ($validated["rating"] == 1) {
-            $recentReviews = Review::where('reseller_id', $validated["reseller_id"])
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
-                ->get();
-
-            $hasTenReviews = $recentReviews->count() >= 10;
-            $allAreOneStar = $recentReviews->every(fn($r) => $r->rating == 1);
-
-            if ($hasTenReviews && $allAreOneStar) {
-                $certificate = Certificate::where('reseller_id', $validated["reseller_id"])
-                    ->where('status', 'paid')
-                    ->first();
-
-                if ($certificate) {
-                    $certificate->update(['status' => 'revoked']);
-
-                    $flashMessages['warning'] = 'Devido a 10 avaliações negativas seguidas, o certificado desta revendedora foi revogado.';
-                }
-            }
+        $reseller = Reseller::withTrashed()->find($id);
+        if ($reseller) {
+            $reseller->restore();
         }
 
         return redirect()
-            ->back()
-            ->with($flashMessages);
+            ->route("resellers.index")
+            ->with("success", "Revendedora reativada com sucesso!");
     }
 }

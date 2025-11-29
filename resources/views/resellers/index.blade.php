@@ -45,7 +45,7 @@
 
                     @foreach ($resellers as $reseller)
                         <div
-                            class="bg-white rounded-xl shadow-lg p-6 flex flex-col transition-transform hover:scale-105 duration-300 border-2 border-transparent hover:border-[#840032]">
+                            class="bg-white rounded-xl shadow-lg p-6 flex flex-col transition-transform hover:scale-105 duration-300 border-2 border-transparent hover:border-[#840032] {{ $reseller->trashed() ? 'opacity-50' : '' }}">
 
                             <div class="relative w-full h-48 mb-6">
                                 <img src="{{ $reseller->photo }}" alt="Foto de {{ $reseller->name }}"
@@ -108,17 +108,30 @@
                                     Atualizar dados
                                 </button>
 
-                                <div class="relative w-full">
-                                    <form action="{{ route('resellers.destroy', $reseller) }}" method="POST"
-                                        class="w-full">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="w-full bg-white text-[#840032] border border-[#840032] font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
-                                            Desativar
-                                        </button>
-                                    </form>
-                                </div>
+                                @if ($reseller->trashed())
+                                    <div class="relative w-full">
+                                        <form action="{{ route('resellers.restore', $reseller->id) }}" method="POST"
+                                            class="w-full">
+                                            @csrf
+                                            <button type="submit"
+                                                class="w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-600 transition-colors">
+                                                Reativar
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <div class="relative w-full">
+                                        <form action="{{ route('resellers.destroy', $reseller) }}" method="POST"
+                                            class="w-full">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="w-full bg-white text-[#840032] border border-[#840032] font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
+                                                Desativar
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endforeach
