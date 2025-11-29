@@ -13,11 +13,13 @@
     @endif
 
 
-    <div class="flex items-end justify-between mb-2">
+    <a href="{{ route('resellers.show', ['reseller' => $reseller->id]) }}">
+        <div class="flex items-end justify-between mb-2">
         <span
             class="text-lg font-bold ml-auto mx-2">{{ number_format($reseller->reviews_avg_rating, 1, ',', '') }}</span>
-        <img src="images/{{ ceil($reseller->reviews_avg_rating) }}-star.svg" alt="">
-    </div>
+            <img src="{{ asset('images/' . ceil($reseller->reviews_avg_rating) . '-star.svg') }}" alt="stars">
+        </div>
+    </a>
 
     <div class="w-full h-48 mb-4">
         <img class="w-full h-full object-cover rounded-md"

@@ -43,7 +43,7 @@
                 {{ number_format(($payment->amount ?? 0) / 100, 2, ',', '.') }}
             </p>
 
-            <a href="{{ route('reseller.show', $reseller) }}" style="padding: 10px"
+            <a href="{{ route('resellers.show', $reseller) }}" style="padding: 10px"
                 class="w-full text-center text-white bg-[#840032] rounded-md">
                 Já paguei
             </a>
@@ -86,7 +86,7 @@
                         countdownElement.textContent = "Expirado";
                         alert("O código PIX expirou. Por favor, gere um novo.");
                         clearInterval(countdownInterval);
-                        window.location.href = "{{ route('reseller.show', $reseller) }}";
+                        window.location.href = "{{ route('resellers.show', $reseller) }}";
                         return;
                     }
 
