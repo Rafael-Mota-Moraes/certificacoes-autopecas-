@@ -168,7 +168,7 @@
 
                 <div class="flex justify-end gap-4 mt-6">
                     <button type="button"
-                        class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 transition-colors close-photo-modal-btn">
+                        class="bg-white text-[#840032] border border-[#840032] font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors close-photo-modal-btn">
                         Cancelar
                     </button>
                     <button type="submit"

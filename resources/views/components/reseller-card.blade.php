@@ -39,7 +39,7 @@
             Ver Detalhes
         </button>
         <button @click="ratedModalOpen = true; selectedResellerId = {{ $reseller->id }}"
-            class="w-full text-center bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 transition-colors">
+            class="w-full text-center bg-white text-[#840032] border border-[#840032] font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
             Avaliar
         </button>
     </div>
