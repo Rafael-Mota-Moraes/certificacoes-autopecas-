@@ -33,8 +33,8 @@
                     </div>
                 </div>
 
-                @if (!$hasActiveCertificate)
-                    <div class="flex-1 flex justify-center md:justify-end">
+                <div class="flex-1 flex justify-center md:justify-end">
+                    @if (!$hasActiveCertificate && Auth::check() && Auth::user()->id == $reseller->user_id)
                         <div class="flex items-center gap-2">
 
                             <div class="relative">
@@ -75,31 +75,29 @@
                                             @else
                                                 <span class="text-red-500 font-bold text-lg"
                                                     title="Não atingido ({{ $totalReviews }} avaliações)">✗</span>
-                                            @endif
-                                            <span class="text-sm text-gray-700">{{ $criteriaReviews }} avaliações</span>
-                                        </div>
+                                                @endif
+                                                <span class="text-sm text-gray-700">{{ $criteriaReviews }}
+                                                    avaliações</span>
+                                            </div>
 
-                                        <div class="flex items-center gap-2">
-                                            @if ($meetsPercentage)
-                                                <span class="text-green-500 font-bold text-lg"
-                                                    title="Atingido! ({{ $positivePercentage }}% positivas)">✓</span>
-                                            @else
-                                                <span class="text-red-500 font-bold text-lg"
-                                                    title="Não atingido ({{ $positivePercentage }}% positivas)">✗</span>
-                                            @endif
-                                            <span class="text-sm text-gray-700">{{ $criteriaPercentage }}% de
-                                                avaliações positivas</span>
+                                            <div class="flex items-center gap-2">
+                                                @if ($meetsPercentage)
+                                                    <span class="text-green-500 font-bold text-lg"
+                                                        title="Atingido! ({{ $positivePercentage }}% positivas)">✓</span>
+                                                @else
+                                                    <span class="text-red-500 font-bold text-lg"
+                                                        title="Não atingido ({{ $positivePercentage }}% positivas)">✗</span>
+                                                    @endif
+                                                    <span class="text-sm text-gray-700">{{ $criteriaPercentage }}% de
+                                                        avaliações positivas</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
 
-                        </div>
-                    </div>
-                @else
-                    <div class="flex-1 md:block hidden"></div>
-                @endif
-            </div>
+                                </div>
+                            @endif
+                        </div>            </div>
 
             <div class="flex flex-wrap gap-2 justify-center mb-10">
                 <a href="{{ route('resellers.show', $reseller) }}"
